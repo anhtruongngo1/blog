@@ -199,7 +199,9 @@ let getAllUsers = (page, size , type , q) => {
           });
           if (users) {
             users.rows.map((item) => {
-              item.image = Buffer.from(item.image, "base64").toString("binary");
+              if (item.image) {
+                item.image = Buffer.from(item.image, "base64").toString("binary");
+             }
               return item;
             });
           }

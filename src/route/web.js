@@ -6,6 +6,7 @@ import patienControllers from "../controllers/patienControllers";
 import specialtyControllers from "../controllers/specialyControllers";
 import clinicControllers from "../controllers/clinicControllers" ;
 import middlewareController from '../controllers/middlewareController';
+import blogControllers from "../controllers/blogControllers"
 
 
 const router = express.Router();
@@ -27,12 +28,13 @@ const initWebRoutes = (app) => {
   router.post('/api/create-new-user' ,userController.handleCreateNewUser);
   router.put('/api/edit-user' ,userController.handleEditUser);
   router.delete('/api/delete-user' ,userController.handleDeleteUser);
-  router.get('/api/allcode' ,userController.getAllCode ) ;
-
+  router.get('/api/allcode' ,userController.getAllCode) ;
   // API GET  doctor top
   router.get('/api/top-doctor-home' ,doctorController.getTopDoctorHome );
   // GET all doctor 
-  router.get('/api/get-all-doctors',doctorController.getAllDoctors );
+  router.get('/api/get-all-doctors', doctorController.getAllDoctors);
+  //GET SEARCH DOCTOR
+  router.get('/api/get-search-doctor',doctorController.getSearchDoctor );
   // post all doctor inform
   router.post('/api/save-info-doctors' ,doctorController.postInfoDoctors );
   // get all doctor inform
@@ -61,6 +63,17 @@ const initWebRoutes = (app) => {
   router.get('/api/get-all-clinic', clinicControllers.getAllClinic); 
    // get infor doctor clinic
   router.get('/api/get-detail-clinic-by-id', clinicControllers.getDetailClinicById); 
+
+
+  // api Blog
+  router.post('/api/save-info-blogs', blogControllers.postInfoBlog);
+  router.get('/api/get-list-blog', blogControllers.getListBlog);
+  router.delete('/api/delete-blog' ,blogControllers.handleDeleteBlog);
+  router.get('/api/get-blog-detail', blogControllers.handleBlogDetails);
+  router.put('/api/edit-blog' ,blogControllers.handleEditBlog);
+
+
+
   
   // get all list patient  for doctor 
    // get infor doctor clinic

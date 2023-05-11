@@ -22,7 +22,19 @@ let  getAllDoctors = async(req, res) => {
     } catch (e) {
         console.log(e)
         return res.status(404).json({
-        errcode: -1 ,
+        errCode: -1 ,
+        errMessage: 'Erorr'
+    })
+    }
+}
+let  getSearchDoctor = async(req, res) => {
+    try {
+        let doctors = await doctorService.getSearchDoctor(req.query.q , req.query.type) 
+        return res.status(200).json(doctors)
+    } catch (e) {
+        console.log(e)
+        return res.status(404).json({
+        errCode: -1 ,
         errMessage: 'Erorr'
     })
     }
@@ -35,7 +47,7 @@ let  getAllDoctors = async(req, res) => {
         } catch (e) {
             console.log(e)
             return res.status(404).json({
-            errcode: -1 ,
+            errCode: -1 ,
             errMessage: 'Erorr'
         })
         }
@@ -48,7 +60,7 @@ let  getAllDoctors = async(req, res) => {
         } catch (e) {
             console.log(e);
             return res.status(200).json({
-                errcode: -1 ,
+                errCode: -1 ,
                 errMessage: 'Erorr'
             })
         }
@@ -62,7 +74,7 @@ let bulkCreateSchedule = async (req, res) => {
         } catch (e) {
             console.log(e);
             return res.status(200).json({
-                errcode: -1 ,
+                errCode: -1 ,
                 errMessage: 'Erorr'
             })
         }
@@ -77,7 +89,7 @@ let getScheduleDoctorByDate = async (req, res) => {
      } catch (e) {
         console.log(e);
         return res.status(200).json({
-            errcode: -1 ,
+            errCode: -1 ,
             errMessage: 'Erorr from sever'
         })
      }
@@ -91,7 +103,7 @@ let getExtraInforDoctorById = async (req, res) => {
      } catch (e) {
         console.log(e);
         return res.status(200).json({
-            errcode: -1 ,
+            errCode: -1 ,
             errMessage: 'Erorr from sever'
         })
      }   
@@ -106,7 +118,7 @@ let getProfileDoctorById = async (req, res) => {
       } catch (e) {
           console.log(e);
           return res.status(200).json({
-              errcode: -1,
+              errCode: -1,
               errMessage: 'Erorr from sever'
           })
       }
@@ -121,7 +133,7 @@ let getListPatientForDoctor = async (req, res) => {
       } catch (e) {
           console.log(e);
           return res.status(200).json({
-              errcode: -1,
+              errCode: -1,
               errMessage: 'Erorr from sever'
           })
       }
@@ -136,7 +148,7 @@ let sendRemedy = async (req, res) => {
       } catch (e) {
           console.log(e);
           return res.status(200).json({
-              errcode: -1,
+              errCode: -1,
               errMessage: 'Erorr from sever'
           })
       }
@@ -146,6 +158,7 @@ module.exports = {
     getAllDoctors ,
     postInfoDoctors ,
     getDetailDoctorById,
+    getSearchDoctor ,
     bulkCreateSchedule,
     getScheduleDoctorByDate,
     getExtraInforDoctorById,

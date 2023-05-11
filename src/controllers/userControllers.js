@@ -13,14 +13,14 @@ let  handleLogin = async(req, res) => {
     // check email exist
     if(!email|| !password) {
         return res.status(500).json({
-            errcode: '1' ,
+            errCode: '1' ,
             message: 'missing inputs  parameter'
         })
     }
     let userData = await userSevices.handleUserLogin(email, password);
     refreshtokenData.push( userData.refreshToken)
     return res.status(200).json({
-        errcode: userData.errCode ,
+        errCode: userData.errCode ,
         errMessage:  userData.errMessage  ,
         user : userData.user ? userData.user : {} ,
         accessToken : userData.accessToken,
@@ -32,7 +32,7 @@ let handleGetUserDetails = async (req, res) => {
 
         if(!id){
             return res.status(200).json({
-                errcode: 1 ,
+                errCode: 1 ,
                 errMessage : 'Misiggggggggggggg' ,
                 users : []
             })
@@ -41,23 +41,26 @@ let handleGetUserDetails = async (req, res) => {
 
 
         return res.status(200).json({
-            errcode: 0 ,
+            errCode: 0 ,
             errMessage : '0' ,
-            users
+            users               
         })
 }
 let handleGetAllUsers= async (req, res) => {
-    let {page , size} = req.query;
+    let {page , size , type , q} = req.query;
 
     if(!page || !size){
     page = 0 ;
     size = 5 ;
     }
-    let users = await userSevices.getAllUsers(page,size)
+    if (!type) {
+        type='ALL'
+    }
+    let users = await userSevices.getAllUsers(page,size , type , q)
 
 
     return res.status(200).json({
-        errcode: 0 ,
+        errCode: 0 ,
         errMessage : '0' ,
         users 
     })
@@ -76,13 +79,13 @@ let handleEditUser = async (req, res) =>{
     return res.status(200).json(message)
     }
 let handleDeleteUser = async (req, res) =>{
-    if(!req.body.id){
+    if(!req.query.id){
         return res.status(200).json({
-            errcode : 1 ,
+            errCode : 1 ,
             errMessage : 'mising id'
         })
     }
-    let message = await userSevices.deleteUser(req.body.id)
+    let message = await userSevices.deleteUser(req.query.id)
     return res.status(200).json(message)
     }
     let getAllCode = async (req, res) => {
@@ -95,7 +98,7 @@ let handleDeleteUser = async (req, res) =>{
         } catch (e) {
             console.log('getallcode err',e)
             return res.status(200).json({
-                errcode : -1 ,
+                errCode : -1 ,
                 errMessage: 'eror from sever'
             })
         }

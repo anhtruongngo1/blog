@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 let buildUrlEmail = (doctorId, token ) => {
   
-  let   result = `${process.env.URL_REACT}/verify-booking?token=${token}&doctorId=${userId}`
+  let   result = `${process.env.URL_WEBSITE}/verify-booking?token=${token}&doctorId=${doctorId}`
     return result
 }
 
@@ -15,7 +15,7 @@ let postBookAppointment = (data) => {
                 || !data.selectedGender || !data.address
                 ) {
                 resolve({
-                    errcode: 1,
+                    errCode: 1,
                     errMessage : 'missing parameters'
                 })
             } else {
@@ -24,7 +24,7 @@ let postBookAppointment = (data) => {
                 await emailService.sendSimpleEmail({
                     reciveEmail: data.email,
                     patientName: data.fullName,
-                    time: data.timeString,
+                    timeType: data.timeString,
                     doctorName: data.doctorName,
                     redirectLink : buildUrlEmail(data.doctorId , token)
                 })
@@ -60,7 +60,7 @@ let postBookAppointment = (data) => {
                     })                  
                 }
                 resolve({
-                    errcode: 0,
+                    errCode: 0,
                     errMessage : 'save infor patient success'
                 
                 })
@@ -76,7 +76,7 @@ let postVerifyBookAppointment = (data) => {
         try {
             if (!data.token && !data.doctorId ) {
                 resolve({
-                    errcode: 1,
+                    errCode: 1,
                     errMessage : 'missing parameters'
                 })
             } else {
@@ -92,12 +92,12 @@ let postVerifyBookAppointment = (data) => {
                     appointment.statusId = 'S2'
                     await appointment.save()
                     resolve({
-                        errcode: 0,
+                        errCode: 0,
                         errMessage : 'update appointment success'
                     })
                 } else {
                     resolve({
-                        errcode: 2,
+                        errCode: 2,
                         errMessage : 'appointment has already been exits'
                     })
                 }

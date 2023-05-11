@@ -5,7 +5,7 @@ let createClinic = (data) => {
         try {       
             if (!data.name || !data.address ||!data.avatar || !data.descriptionMarkdown || !data.descriptionHTML ){
                 resolve({
-                    errcode: 1,
+                    errCode: 1,
                     errMessage : 'missing parameters'
                 })
             } else {
@@ -17,7 +17,7 @@ let createClinic = (data) => {
                     descriptionMarkdown : data.descriptionMarkdown
                 })
                 resolve({
-                    errcode: 0,
+                    errCode: 0,
                     errMessage : 'ok'
                 })
             }
@@ -39,7 +39,7 @@ let getAllClinic = () => {
                 
             }
             resolve({
-                errcode: 0,
+                errCode: 0,
                 errMessage: 'ok',
                 data
             })
@@ -54,7 +54,7 @@ let getDetailClinicById = (inputId ) => {
         try {
             if (!inputId ) {
                 resolve({
-                    errcode: 1,
+                    errCode: 1,
                     errMessage: 'missing parameters'
                 })
             } else {
@@ -87,7 +87,7 @@ let getDetailClinicById = (inputId ) => {
                         data = {}
                     }
                     resolve({
-                        errcode: 0,
+                        errCode: 0,
                         errMessage: 'ok',
                         data
                     })             

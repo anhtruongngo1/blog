@@ -9,7 +9,7 @@ let createClinic = async(req, res) => {
         } catch (e) {
             console.log(e);
             return res.status(200).json({
-                errcode: -1,
+                errCode: -1,
                 errMessage : ' error from server '
             })
         }
@@ -22,7 +22,7 @@ let getAllClinic = async (req, res) => {
         } catch (e) {
             console.log(e);
             return res.status(200).json({
-                errcode: -1,
+                errCode: -1,
                 errMessage : ' error from server '
             })
         }
@@ -35,7 +35,7 @@ let getDetailClinicById = async (req, res) => {
         } catch (e) {
             console.log(e);
             return res.status(200).json({
-                errcode: -1,
+                errCode: -1,
                 errMessage : ' error from server '
             })
         }

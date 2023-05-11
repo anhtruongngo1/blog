@@ -1,4 +1,5 @@
 import db from "../models/index";
+import { Op } from 'sequelize';
 import bcrypt from "bcryptjs";
 var jwt = require("jsonwebtoken");
 const salt = bcrypt.genSaltSync(10);
@@ -95,19 +96,9 @@ let checkUserEmail = (userEmail) => {
 let handleGetUserDetails = (userId) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let users = "";
-      if (userId === "All") {
-        users = await db.User.findAll({
-          attributes: {
-            exclude: ["password", "image"],
-          },
-        });
-      }
-      if (userId && userId !== "All") {
-        users = await db.User.findOne({
-          where: { id: userId },
-        });
-      }
+      const user = await db.User.findOne({
+        where: { id: userId },
+      });
       // if (users && users.length > 0) {
       //   users.map(item => {
       //       item.image = Buffer.from(item.image , 'base64').toString('binary');
@@ -115,13 +106,16 @@ let handleGetUserDetails = (userId) => {
       //   })
 
       //}
-      resolve(users);
+      if (user) {
+        user.image = Buffer.from(user.image , 'base64').toString('binary');
+      }
+      resolve(user);
     } catch (error) {
       reject(error);
     }
   });
 };
-let getAllUsers = (page, size) => {
+let getAllUsers = (page, size , type , q) => {
   return new Promise(async (resolve, reject) => {
     try {
       const pageAsNumber = Number.parseInt(page);
@@ -139,31 +133,315 @@ let getAllUsers = (page, size) => {
       ) {
         size = sizeAsNumber;
       }
-
-      const users = await db.User.findAndCountAll({
-        attributes: {
-          exclude: ["password"],
-        },
-        include: [{ model: db.Allcode, as: "positionData" , attributes: ["valueEn" , "valueVi"]},
-        { model: db.Allcode, as: "roleData" , attributes: ["valueEn" , "valueVi"]}
-      ],
-        raw: true,
-        nest: true,
-
-        limit: size,
-        offset: page * size,
-      });
-      if (users && users.length > 0) {
-        users.map(item => {
-            item.image =   Buffer.from(item.image , 'base64').toString('binary');  
-            return item
-        })
-        
-    }
-      resolve({
-        data: users.rows,
-        totalPages: Math.ceil(users.count / size),
-      });
+      if (type === 'ALL') {
+        if (q) {
+          const users = await db.User.findAndCountAll({
+            where:{
+              [Op.or]: [{ firstName: { [Op.like]: "%" + q + "%" } }],
+            } ,
+            attributes: {
+              exclude: ["password"],
+            },
+            include: [
+              {
+                model: db.Allcode,
+                as: "positionData",
+                attributes: ["valueEn", "valueVi"],
+              },
+              {
+                model: db.Allcode,
+                as: "roleData",
+                attributes: ["valueEn", "valueVi"],
+              },
+            ],
+            raw: true,
+            nest: true,
+    
+            limit: size,
+            offset: page * size,
+            order: [["createdAt", "DESC"]],
+          });
+          if (users) {
+            users.rows.map((item) => {
+              if (item.image) {
+                item.image = Buffer.from(item.image, "base64").toString("binary");
+             }
+              return item;
+            });
+          }
+          resolve({
+            data: users.rows,
+            totalPages: Math.ceil(users.count / size),
+          });
+        } else {
+          const users = await db.User.findAndCountAll({
+            attributes: {
+              exclude: ["password"],
+            },
+            include: [
+              {
+                model: db.Allcode,
+                as: "positionData",
+                attributes: ["valueEn", "valueVi"],
+              },
+              {
+                model: db.Allcode,
+                as: "roleData",
+                attributes: ["valueEn", "valueVi"],
+              },
+            ],
+            raw: true,
+            nest: true,
+    
+            limit: size,
+            offset: page * size,
+            order: [["createdAt", "DESC"]],
+          });
+          if (users) {
+            users.rows.map((item) => {
+              item.image = Buffer.from(item.image, "base64").toString("binary");
+              return item;
+            });
+          }
+          resolve({
+            data: users.rows,
+            totalPages: Math.ceil(users.count / size),
+          });
+        }
+      }else if (type === 'DOCTOR') {
+        if (q) {
+          const users = await db.User.findAndCountAll({
+            where: {
+              roleId : 'R2',
+              [Op.or]: [{ firstName: { [Op.like]: "%" + q + "%" } }],
+            } ,
+            attributes: {
+              exclude: ["password"],
+            },
+            include: [
+              {
+                model: db.Allcode,
+                as: "positionData",
+                attributes: ["valueEn", "valueVi"],
+              },
+              {
+                model: db.Allcode,
+                as: "roleData",
+                attributes: ["valueEn", "valueVi"],
+              },
+            ],
+            raw: true,
+            nest: true,
+    
+            limit: size,
+            offset: page * size,
+            order: [["createdAt", "DESC"]],
+          });
+          if (users) {
+            users.rows.map((item) => {
+              item.image = Buffer.from(item.image, "base64").toString("binary");
+              return item;
+            });
+          }
+          resolve({
+            data: users.rows,
+            totalPages: Math.ceil(users.count / size),
+          });
+        } else {
+          const users = await db.User.findAndCountAll({
+            where: {
+              roleId : 'R2'
+            },
+            attributes: {
+              exclude: ["password"],
+            },
+            include: [
+              {
+                model: db.Allcode,
+                as: "positionData",
+                attributes: ["valueEn", "valueVi"],
+              },
+              {
+                model: db.Allcode,
+                as: "roleData",
+                attributes: ["valueEn", "valueVi"],
+              },
+            ],
+            raw: true,
+            nest: true,
+    
+            limit: size,
+            offset: page * size,
+            order: [["createdAt", "DESC"]],
+          });
+          if (users) {
+            users.rows.map((item) => {
+              item.image = Buffer.from(item.image, "base64").toString("binary");
+              return item;
+            });
+          }
+          resolve({
+            data: users.rows,
+            totalPages: Math.ceil(users.count / size),
+          });
+        }
+      }else if (type === 'ADMIN') {
+        if (q) {
+          const users = await db.User.findAndCountAll({
+            where: {
+              roleId : 'R1',
+              [Op.or]: [{ firstName: { [Op.like]: "%" + q + "%" } }],
+            } ,
+            attributes: {
+              exclude: ["password"],
+            },
+            include: [
+              {
+                model: db.Allcode,
+                as: "positionData",
+                attributes: ["valueEn", "valueVi"],
+              },
+              {
+                model: db.Allcode,
+                as: "roleData",
+                attributes: ["valueEn", "valueVi"],
+              },
+            ],
+            raw: true,
+            nest: true,
+    
+            limit: size,
+            offset: page * size,
+            order: [["createdAt", "DESC"]],
+          });
+          if (users) {
+            users.rows.map((item) => {
+              item.image = Buffer.from(item.image, "base64").toString("binary");
+              return item;
+            });
+          }
+          resolve({
+            data: users.rows,
+            totalPages: Math.ceil(users.count / size),
+          });
+        } else {
+          const users = await db.User.findAndCountAll({
+            where: {
+              roleId : 'R1'
+            },
+            attributes: {
+              exclude: ["password"],
+            },
+            include: [
+              {
+                model: db.Allcode,
+                as: "positionData",
+                attributes: ["valueEn", "valueVi"],
+              },
+              {
+                model: db.Allcode,
+                as: "roleData",
+                attributes: ["valueEn", "valueVi"],
+              },
+            ],
+            raw: true,
+            nest: true,
+    
+            limit: size,
+            offset: page * size,
+            order: [["createdAt", "DESC"]],
+          });
+          if (users) {
+            users.rows.map((item) => {
+              item.image = Buffer.from(item.image, "base64").toString("binary");
+              return item;
+            });
+          }
+          resolve({
+            data: users.rows,
+            totalPages: Math.ceil(users.count / size),
+          });
+        }
+      }else if (type === 'PATIENT') {
+        if (q) {
+          const users = await db.User.findAndCountAll({
+            where: {
+              roleId : 'R3',
+              [Op.or]: [{ firstName: { [Op.like]: "%" + q + "%" } }],
+            } ,
+            attributes: {
+              exclude: ["password"],
+            },
+            include: [
+              {
+                model: db.Allcode,
+                as: "positionData",
+                attributes: ["valueEn", "valueVi"],
+              },
+              {
+                model: db.Allcode,
+                as: "roleData",
+                attributes: ["valueEn", "valueVi"],
+              },
+            ],
+            raw: true,
+            nest: true,
+    
+            limit: size,
+            offset: page * size,
+            order: [["createdAt", "DESC"]],
+          });
+          if (users) {
+            users.rows.map((item) => {
+              item.image = Buffer.from(item.image, "base64").toString("binary");
+              return item;
+            });
+          }
+          resolve({
+            data: users.rows,
+            totalPages: Math.ceil(users.count / size),
+          });
+        } else {
+          const users = await db.User.findAndCountAll({
+            where: {
+              roleId : 'R3'
+            },
+            attributes: {
+              exclude: ["password"],
+            },
+            include: [
+              {
+                model: db.Allcode,
+                as: "positionData",
+                attributes: ["valueEn", "valueVi"],
+              },
+              {
+                model: db.Allcode,
+                as: "roleData",
+                attributes: ["valueEn", "valueVi"],
+              },
+            ],
+            raw: true,
+            nest: true,
+    
+            limit: size,
+            offset: page * size,
+            order: [["createdAt", "DESC"]],
+          });
+          if (users) {
+            users.rows.map((item) => {
+              item.image = Buffer.from(item.image, "base64").toString("binary");
+              return item;
+            });
+          }
+          resolve({
+            data: users.rows,
+            totalPages: Math.ceil(users.count / size),
+          });
+        }
+      }
+      
+    
     } catch (error) {
       reject(error);
     }
@@ -243,11 +521,11 @@ let updateUserData = (data) => {
         user.firstName = data.firstName;
         user.lastName = data.lastName;
         user.address = data.address;
-        user.phonenumber = data.phoneNumber;
+        user.phoneNumber = data.phoneNumber;
         user.gender = data.gender;
         user.roleId = data.roleId;
         user.positionId = data.positionId;
-        user.image = data.avatar;
+        user.image = data.image;
 
         await user.save();
         resolve({

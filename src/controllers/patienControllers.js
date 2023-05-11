@@ -10,10 +10,9 @@ let postBookAppointment = async (req, res) => {
     } catch (e) {
         console.log(e)
         return res.status(200).json({
-            errcode: -1,
-            errMessage: 'Erorr from sever'
+            errCode: -1,
+            errMessage: 'Erorr from sever lỗi từ serve'
         })
-        
     }
 
 }
@@ -27,7 +26,7 @@ let postVerifyBookAppointment = async (req, res) => {
     } catch (e) {
         console.log(e)
         return res.status(200).json({
-            errcode: -1,
+            errCode: -1,
             errMessage: 'Erorr from sever'
         })
         

@@ -6,7 +6,7 @@ let createSpecialty = (data) => {
             if (!data.name || !data.avatar || !data.descriptionMarkdown || !data.descriptionHTML
             ) {
                 resolve({
-                    errcode: 1,
+                    errCode: 1,
                     errMessage : 'missing parameters'
                 })
             } else {
@@ -39,7 +39,7 @@ let getAllSpecialty = () => {
                 
             }
             resolve({
-                errcode: 0,
+                errCode: 0,
                 errMessage: 'ok',
                 data
             })
@@ -54,7 +54,7 @@ let getDetailSpecialtyById = (inputId , location) => {
         try {
             if (!inputId || !location) {
                 resolve({
-                    errcode: 1,
+                    errCode: 1,
                     errMessage: 'missing parameters'
                 })
             } else {
@@ -104,7 +104,7 @@ let getDetailSpecialtyById = (inputId , location) => {
                         data = {}
                     }
                     resolve({
-                        errcode: 0,
+                        errCode: 0,
                         errMessage: 'ok',
                         data
                     })             

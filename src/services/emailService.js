@@ -23,11 +23,11 @@ let sendSimpleEmail =async(dataSend) => {
      <h3> Xin chào khách hàng ${dataSend.patientName} !</h3>
       <p>Bạn nhận được email này vì đã đặt lịch khám bệnh online </p>
       <p>Thông tin đặt lịch khám bệnh </p>
-      <div> <b>  thời gian: ${dataSend.time}   </b>    </div>
+      <div> <b>  thời gian: ${dataSend.timeType}   </b>    </div>
       <div> <b>  bác sĩ: ${dataSend.doctorName}   </b>    </div>
 
       <p>    Nếu các thông tin là đúng please click vào đường link để hoàn tất </p>
-      <div> <a href="https://www.facebook.com/"  target="_blank"> Click here </a> </div>
+      <div> <a href="${dataSend.redirectLink}"  target="_blank"> Click here </a> </div>
      `, // html body
   });
 }

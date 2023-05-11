@@ -241,8 +241,9 @@ let getAllUsers = (page, size , type , q) => {
           });
           if (users) {
             users.rows.map((item) => {
-              item.image = Buffer.from(item.image, "base64").toString("binary");
-              return item;
+              if (item.image) {
+                item.image = Buffer.from(item.image, "base64").toString("binary");
+             }              return item;
             });
           }
           resolve({
@@ -318,8 +319,9 @@ let getAllUsers = (page, size , type , q) => {
           });
           if (users) {
             users.rows.map((item) => {
-              item.image = Buffer.from(item.image, "base64").toString("binary");
-              return item;
+              if (item.image) {
+                item.image = Buffer.from(item.image, "base64").toString("binary");
+             }              return item;
             });
           }
           resolve({
@@ -355,8 +357,9 @@ let getAllUsers = (page, size , type , q) => {
           });
           if (users) {
             users.rows.map((item) => {
-              item.image = Buffer.from(item.image, "base64").toString("binary");
-              return item;
+              if (item.image) {
+                item.image = Buffer.from(item.image, "base64").toString("binary");
+             }              return item;
             });
           }
           resolve({
@@ -395,8 +398,9 @@ let getAllUsers = (page, size , type , q) => {
           });
           if (users) {
             users.rows.map((item) => {
-              item.image = Buffer.from(item.image, "base64").toString("binary");
-              return item;
+              if (item.image) {
+                item.image = Buffer.from(item.image, "base64").toString("binary");
+             }              return item;
             });
           }
           resolve({
@@ -432,8 +436,9 @@ let getAllUsers = (page, size , type , q) => {
           });
           if (users) {
             users.rows.map((item) => {
-              item.image = Buffer.from(item.image, "base64").toString("binary");
-              return item;
+              if (item.image) {
+                item.image = Buffer.from(item.image, "base64").toString("binary");
+             }              return item;
             });
           }
           resolve({

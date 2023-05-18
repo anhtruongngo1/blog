@@ -65,17 +65,20 @@ let handleGetAllUsers= async (req, res) => {
         users 
     })
 }
-let handleCreateNewUser = async  (req, res) => {
-     let isValid = req.body
-     if(isValid && isValid!== undefined) {
-         let message = await userSevices.createNewUser(req.body)
+let handleCreateNewUser = async (req, res) => {
+    let data = req.body
+    let image = req.file.path
+     if(data && data!== undefined) {
+         let message = await userSevices.createNewUser(data,image )
          return res.status(200).json(message)
 
      }
-    }
+}
 let handleEditUser = async (req, res) =>{
-    let data = req.body ;
-    let message = await userSevices.updateUserData(data)
+    let data = req.body;
+    let image = req.file
+
+    let message = await userSevices.updateUserData(data , image)
     return res.status(200).json(message)
     }
 let handleDeleteUser = async (req, res) =>{
@@ -110,6 +113,6 @@ module.exports = {
     handleCreateNewUser ,
     handleEditUser ,
     handleDeleteUser ,
-    getAllCode
+    getAllCode,
 
 }

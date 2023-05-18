@@ -106,9 +106,6 @@ let handleGetUserDetails = (userId) => {
       //   })
 
       //}
-      if (user) {
-        user.image = Buffer.from(user.image , 'base64').toString('binary');
-      }
       resolve(user);
     } catch (error) {
       reject(error);
@@ -161,14 +158,6 @@ let getAllUsers = (page, size , type , q) => {
             offset: page * size,
             order: [["createdAt", "DESC"]],
           });
-          if (users) {
-            users.rows.map((item) => {
-              if (item.image) {
-                item.image = Buffer.from(item.image, "base64").toString("binary");
-             }
-              return item;
-            });
-          }
           resolve({
             data: users.rows,
             totalPages: Math.ceil(users.count / size),
@@ -197,14 +186,7 @@ let getAllUsers = (page, size , type , q) => {
             offset: page * size,
             order: [["createdAt", "DESC"]],
           });
-          if (users) {
-            users.rows.map((item) => {
-              if (item.image) {
-                item.image = Buffer.from(item.image, "base64").toString("binary");
-             }
-              return item;
-            });
-          }
+  
           resolve({
             data: users.rows,
             totalPages: Math.ceil(users.count / size),
@@ -239,13 +221,7 @@ let getAllUsers = (page, size , type , q) => {
             offset: page * size,
             order: [["createdAt", "DESC"]],
           });
-          if (users) {
-            users.rows.map((item) => {
-              if (item.image) {
-                item.image = Buffer.from(item.image, "base64").toString("binary");
-             }              return item;
-            });
-          }
+    
           resolve({
             data: users.rows,
             totalPages: Math.ceil(users.count / size),
@@ -277,12 +253,6 @@ let getAllUsers = (page, size , type , q) => {
             offset: page * size,
             order: [["createdAt", "DESC"]],
           });
-          if (users) {
-            users.rows.map((item) => {
-              item.image = Buffer.from(item.image, "base64").toString("binary");
-              return item;
-            });
-          }
           resolve({
             data: users.rows,
             totalPages: Math.ceil(users.count / size),
@@ -317,13 +287,7 @@ let getAllUsers = (page, size , type , q) => {
             offset: page * size,
             order: [["createdAt", "DESC"]],
           });
-          if (users) {
-            users.rows.map((item) => {
-              if (item.image) {
-                item.image = Buffer.from(item.image, "base64").toString("binary");
-             }              return item;
-            });
-          }
+    
           resolve({
             data: users.rows,
             totalPages: Math.ceil(users.count / size),
@@ -355,13 +319,7 @@ let getAllUsers = (page, size , type , q) => {
             offset: page * size,
             order: [["createdAt", "DESC"]],
           });
-          if (users) {
-            users.rows.map((item) => {
-              if (item.image) {
-                item.image = Buffer.from(item.image, "base64").toString("binary");
-             }              return item;
-            });
-          }
+
           resolve({
             data: users.rows,
             totalPages: Math.ceil(users.count / size),
@@ -396,13 +354,6 @@ let getAllUsers = (page, size , type , q) => {
             offset: page * size,
             order: [["createdAt", "DESC"]],
           });
-          if (users) {
-            users.rows.map((item) => {
-              if (item.image) {
-                item.image = Buffer.from(item.image, "base64").toString("binary");
-             }              return item;
-            });
-          }
           resolve({
             data: users.rows,
             totalPages: Math.ceil(users.count / size),
@@ -434,13 +385,6 @@ let getAllUsers = (page, size , type , q) => {
             offset: page * size,
             order: [["createdAt", "DESC"]],
           });
-          if (users) {
-            users.rows.map((item) => {
-              if (item.image) {
-                item.image = Buffer.from(item.image, "base64").toString("binary");
-             }              return item;
-            });
-          }
           resolve({
             data: users.rows,
             totalPages: Math.ceil(users.count / size),
@@ -454,9 +398,10 @@ let getAllUsers = (page, size , type , q) => {
     }
   });
 };
-let createNewUser = (data) => {
+let createNewUser = (data , image) => {
   return new Promise(async (resolve, reject) => {
     try {
+      console.log('check' , image);
       let check = await checkUserEmail(data.email);
       if (check === true) {
         resolve({
@@ -475,7 +420,7 @@ let createNewUser = (data) => {
           gender: data.gender,
           roleId: data.roleId,
           positionId: data.positionId,
-          image: data.image,
+          image: image,
         });
         resolve({
           errCode: 0,
@@ -511,7 +456,7 @@ let deleteUser = (userId) => {
     }
   });
 };
-let updateUserData = (data) => {
+let updateUserData = (data , image) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!data.id) {
@@ -525,16 +470,28 @@ let updateUserData = (data) => {
         raw: false,
       });
       if (user) {
-        user.firstName = data.firstName;
-        user.lastName = data.lastName;
-        user.address = data.address;
-        user.phoneNumber = data.phoneNumber;
-        user.gender = data.gender;
-        user.roleId = data.roleId;
-        user.positionId = data.positionId;
-        user.image = data.image;
-
-        await user.save();
+        if (image) {
+          user.firstName = data.firstName;
+          user.lastName = data.lastName;
+          user.address = data.address;
+          user.phoneNumber = data.phoneNumber;
+          user.gender = data.gender;
+          user.roleId = data.roleId;
+          user.positionId = data.positionId;
+          user.image = image.path;
+  
+          await user.save();
+        }
+        else {
+          user.firstName = data.firstName;
+          user.lastName = data.lastName;
+          user.address = data.address;
+          user.phoneNumber = data.phoneNumber;
+          user.gender = data.gender;
+          user.roleId = data.roleId;
+          user.positionId = data.positionId;  
+          await user.save();
+        }
         resolve({
           errCode: 0,
           errMessage: "update is success",

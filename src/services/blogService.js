@@ -1,10 +1,10 @@
 import db from "../models/index";
 import { Op } from "sequelize";
 
-let postInfoBlog = (data) => {
+let postInfoBlog = (data , image) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!data.title || !data.content || !data.thumb || !data.userId || !data.topic) {
+      if (!data.title || !data.content || !image || !data.userId || !data.topic) {
         resolve({
           errCode: 1,
           errMessage: "missing data",
@@ -15,7 +15,7 @@ let postInfoBlog = (data) => {
           userId: data.userId,
           title: data.title,
           content: data.content,
-          thumb: data.thumb,
+          thumb: image.path,
           topic : data.topic
         });
         resolve({
@@ -64,15 +64,6 @@ let getListBlog = (page, size, q) => {
           offset: page * size,
           order: [["createdAt", "DESC"]],
         });
-        if (blog) {
-          blog.rows.map((item) => {
-            item.thumb = Buffer.from(item.thumb, "base64").toString("binary");
-            item.User.image = Buffer.from(item.User.image, "base64").toString(
-              "binary"
-            );
-            return item;
-          });
-        }
         resolve({
           data: blog.rows,
           totalPages: Math.ceil(blog.count / size),
@@ -93,15 +84,6 @@ let getListBlog = (page, size, q) => {
           offset: page * size,
           order: [["createdAt", "DESC"]],
         });
-        if (blog) {
-          blog.rows.map((item) => {
-            item.thumb = Buffer.from(item.thumb, "base64").toString("binary");
-            item.User.image = Buffer.from(item.User.image, "base64").toString(
-              "binary"
-            );
-            return item;
-          });
-        }
         resolve({
           data: blog.rows,
           totalPages: Math.ceil(blog.count / size),
@@ -149,9 +131,6 @@ let handleBlogDetails = (blogId) => {
       //   })
 
       //}
-      if (blog) {
-        blog.thumb = Buffer.from(blog.thumb , 'base64').toString('binary');
-      }
       resolve(blog);
     } catch (error) {
       reject(error);

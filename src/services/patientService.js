@@ -57,12 +57,27 @@ let postBookAppointment = (data) => {
                             token : token
                         }
                         
-                    })                  
-                }
+                    })         
+                    setTimeout(async() => {
+                        let check = await db.booking.findOne({
+                            where: {
+                                token : token
+                            }
+                        })
+                        if(check && check.statusId === 'S1' ){
+                            await db.booking.destroy({
+                                where: {
+                                    token : token 
+                                }
+                            })
+                            console.log('đã xóa rồi');
+                        } else {
+                            console.log('nooooo');
+                        }
+                      }, 600000);  }
                 resolve({
                     errCode: 0,
-                    errMessage : 'save infor patient success'
-                
+                    errMessage : 'save infor patient success'              
                 })
             }
             

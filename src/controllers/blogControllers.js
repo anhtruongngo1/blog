@@ -2,7 +2,8 @@ import blogService from "../services/blogService"
 
 let postInfoBlog = async(req, res) => {
     try {
-        let response = await blogService.postInfoBlog(req.body)
+        const image = req.file
+        let response = await blogService.postInfoBlog(req.body , image)
         return res.status(200).json(response)
         
     } catch (e) {

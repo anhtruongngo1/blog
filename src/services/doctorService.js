@@ -1,5 +1,5 @@
 import db from "../models/index";
-import { Op } from 'sequelize';
+import { Op } from "sequelize";
 require("dotenv").config();
 import _ from "lodash";
 import emailService from "../services/emailService";
@@ -29,12 +29,11 @@ let getTopDoctorHome = (limitInput) => {
         nest: true,
       });
       if (users && users.length > 0) {
-        users.map(item => {
-            item.image =   Buffer.from(item.image , 'base64').toString('binary');  
-            return item
-        })
-        
-    }
+        users.map((item) => {
+          item.image = Buffer.from(item.image, "base64").toString("binary");
+          return item;
+        });
+      }
 
       resolve({
         errCode: 0,
@@ -57,6 +56,112 @@ let getAllDoctors = () => {
       resolve({
         errCode: 0,
         data: doctors,
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+let getDoctorBySpecial = (id , page , size) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const pageAsNumber = Number.parseInt(page);
+      const sizeAsNumber = Number.parseInt(size);
+
+      // let page = 0 ;
+      if (!Number.isNaN(pageAsNumber) && pageAsNumber > 0) {
+        page = pageAsNumber;
+      }
+      //let size = 10 ;
+      if (
+        !Number.isNaN(sizeAsNumber) &&
+        sizeAsNumber > 0 &&
+        sizeAsNumber < 10
+      ) {
+        size = sizeAsNumber;
+      }
+      let doctors = await db.doctorInfor.findAndCountAll({
+        where: { specialtyId: id },
+        include: [
+          {
+            model: db.User, attributes: {
+              exclude: ["password"],
+            },
+            include: [
+              {
+                model: db.Allcode,
+                as: "positionData",
+                attributes: ["valueEn", "valueVi"],
+              },
+            ]
+ 
+          },
+        ],
+        raw: true,
+        nest: true,
+        limit: size,
+        offset: page * size,
+        order: [["createdAt", "DESC"]],
+      });
+      resolve({
+        errCode: 0,
+        data: {
+          data: doctors.rows,
+          totalPages: Math.ceil(doctors.count / size),
+        },
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+let getDoctorByClinic = (id , page , size) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const pageAsNumber = Number.parseInt(page);
+      const sizeAsNumber = Number.parseInt(size);
+
+      // let page = 0 ;
+      if (!Number.isNaN(pageAsNumber) && pageAsNumber > 0) {
+        page = pageAsNumber;
+      }
+      //let size = 10 ;
+      if (
+        !Number.isNaN(sizeAsNumber) &&
+        sizeAsNumber > 0 &&
+        sizeAsNumber < 10
+      ) {
+        size = sizeAsNumber;
+      }
+      let doctors = await db.doctorInfor.findAndCountAll({
+        where: { clinicId: id },
+        include: [
+          {
+            model: db.User, attributes: {
+              exclude: ["password"],
+            },
+            include: [
+              {
+                model: db.Allcode,
+                as: "positionData",
+                attributes: ["valueEn", "valueVi"],
+              },
+            ]
+ 
+          },
+        ],
+        raw: true,
+        nest: true,
+        limit: size,
+        offset: page * size,
+        order: [["createdAt", "DESC"]],
+      });
+      resolve({
+        errCode: 0,
+        data: {
+          data: doctors.rows,
+          totalPages: Math.ceil(doctors.count / size),
+        },
       });
     } catch (e) {
       reject(e);
@@ -110,7 +215,7 @@ let saveDetailInfoDoctor = (inputData) => {
 
         // upsert to info table
 
-        let doctorInfor = await db.doctor_infor.findOne({
+        let doctorInfor = await db.doctorInfor.findOne({
           where: {
             doctorId: inputData.doctorId,
           },
@@ -134,7 +239,7 @@ let saveDetailInfoDoctor = (inputData) => {
           });
         } else {
           // create
-          await db.doctor_infor.create({
+          await db.doctorInfor.create({
             doctorId: inputData.doctorId,
             priceId: inputData.priceId,
             provinceId: inputData.provinceId,
@@ -160,129 +265,126 @@ let getSearchDoctor = (q, type) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (type === "ALL") {
-          if (q) {
-            let data = await db.User.findAll({
-                where: {
-                  [Op.or]: [{ firstName: { [Op.like]: "%" + q + "%" } }],
-                  },
-                  attributes: {
-                    exclude: ["image"],
-                  },
-                raw: true,
-                nest: true,
-            });
-            resolve({
-                errCode: 0,
-                errMessage: 'search success',
-                data
-            })
-          } else {
-            let data = await db.User.findAll({
-                  attributes: {
-                    exclude: ["image"],
-                  },
-                raw: true,
-                nest: true,
-            });
-            resolve({
-                errCode: 0,
-                errMessage: 'search success',
-                data
-            })
-      }
+        if (q) {
+          let data = await db.User.findAll({
+            where: {
+              [Op.or]: [{ firstName: { [Op.like]: "%" + q + "%" } }],
+            },
+            attributes: {
+              exclude: ["image"],
+            },
+            raw: true,
+            nest: true,
+          });
+          resolve({
+            errCode: 0,
+            errMessage: "search success",
+            data,
+          });
+        } else {
+          let data = await db.User.findAll({
+            attributes: {
+              exclude: ["image"],
+            },
+            raw: true,
+            nest: true,
+          });
+          resolve({
+            errCode: 0,
+            errMessage: "search success",
+            data,
+          });
+        }
       } else if (type === "DOCTOR") {
-          if (q) {
-            let data = await db.User.findAll({
-                where: {
-                  roleId: "R2",
-                  [Op.or]: [{ firstName: { [Op.like]: "%" + q + "%" } }],
-                  },
-                  attributes: {
-                    exclude: ["image"],
-                  },
-                raw: true,
-                nest: true,
-            });
-            resolve({
-                errCode: 0,
-                errMessage: 'search success',
-                data
-            })
-          } else {
-            let data = await db.User.findAll({
-                where: {
-                  roleId: "R2",
-                  },
-                  attributes: {
-                    exclude: ["image"],
-                  },
-                raw: true,
-                nest: true,
-            });
-            resolve({
-                errCode: 0,
-                errMessage: 'search success',
-                data
-            })
+        if (q) {
+          let data = await db.User.findAll({
+            where: {
+              roleId: "R2",
+              [Op.or]: [{ firstName: { [Op.like]: "%" + q + "%" } }],
+            },
+            attributes: {
+              exclude: ["image"],
+            },
+            raw: true,
+            nest: true,
+          });
+          resolve({
+            errCode: 0,
+            errMessage: "search success",
+            data,
+          });
+        } else {
+          let data = await db.User.findAll({
+            where: {
+              roleId: "R2",
+            },
+            attributes: {
+              exclude: ["image"],
+            },
+            raw: true,
+            nest: true,
+          });
+          resolve({
+            errCode: 0,
+            errMessage: "search success",
+            data,
+          });
         }
       } else if (type === "ADMIN") {
-          if (q) {
-            let data = await db.User.findAll({
-                where: {
-                  roleId: "R1",
-                  [Op.or]: [{ firstName: { [Op.like]: "%" + q + "%" } }],
-                  },
-                  attributes: {
-                    exclude: ["image"],
-                  },
-                raw: true,
-                nest: true,
-            });
-            resolve({
-                errCode: 0,
-                errMessage: 'search success',
-                data
-            })
-          } else {
-            let data = await db.User.findAll({
-                where: {
-                  roleId: "R1",
-                  },
-                  attributes: {
-                    exclude: ["image"],
-                  },
-                raw: true,
-                nest: true,
-            });
-            resolve({
-                errCode: 0,
-                errMessage: 'search success',
-                data
-            })
+        if (q) {
+          let data = await db.User.findAll({
+            where: {
+              roleId: "R1",
+              [Op.or]: [{ firstName: { [Op.like]: "%" + q + "%" } }],
+            },
+            attributes: {
+              exclude: ["image"],
+            },
+            raw: true,
+            nest: true,
+          });
+          resolve({
+            errCode: 0,
+            errMessage: "search success",
+            data,
+          });
+        } else {
+          let data = await db.User.findAll({
+            where: {
+              roleId: "R1",
+            },
+            attributes: {
+              exclude: ["image"],
+            },
+            raw: true,
+            nest: true,
+          });
+          resolve({
+            errCode: 0,
+            errMessage: "search success",
+            data,
+          });
         }
       } else if (type === "PATIENT") {
-          if (q) {
-            let data = await db.User.findAll({
-                where: {
-                  roleId: "R3",
-                  },
-                  attributes: {
-                    exclude: ["image"],
-                  },
-                raw: true,
-                nest: true,
-            });
-            resolve({
-                errCode: 0,
-                errMessage: 'search success',
-                data
-            })
-        }else{
-            
+        if (q) {
+          let data = await db.User.findAll({
+            where: {
+              roleId: "R3",
+            },
+            attributes: {
+              exclude: ["image"],
+            },
+            raw: true,
+            nest: true,
+          });
+          resolve({
+            errCode: 0,
+            errMessage: "search success",
+            data,
+          });
+        } else {
         }
       }
-      
-     
     } catch (e) {
       reject(e);
     }
@@ -315,7 +417,7 @@ let getDetailDoctorById = (inputId) => {
               attributes: ["valueEn", "valueVi"],
             },
             {
-              model: db.doctor_infor,
+              model: db.doctorInfor,
               attributes: {
                 exclude: ["id", "doctorId"],
               },
@@ -389,7 +491,7 @@ let bulkCreateSchedule = (data) => {
         //   return a.timeType === b.timeType && +a.date === +b.date;
         // });
         await db.schedule.destroy({
-          where: { doctorId: data.doctorId , date : data.date },
+          where: { doctorId: data.doctorId, date: data.date },
         });
         if (data.arrSchedule && data.arrSchedule.length > 0) {
           await db.schedule.bulkCreate(data.arrSchedule);
@@ -454,7 +556,7 @@ let getExtraInforDoctorById = (inputId) => {
           errMessage: "missing parameter id",
         });
       } else {
-        let data = await db.doctor_infor.findOne({
+        let data = await db.doctorInfor.findOne({
           where: { doctorId: inputId },
           raw: false,
           nest: true,
@@ -514,7 +616,7 @@ let getProfileDoctorById = (inputId) => {
               attributes: ["valueEn", "valueVi"],
             },
             {
-              model: db.doctor_infor,
+              model: db.doctorInfor,
               attributes: {
                 exclude: ["id", "doctorId"],
               },
@@ -642,6 +744,8 @@ let sendRemedy = (data) => {
 module.exports = {
   getTopDoctorHome: getTopDoctorHome,
   getAllDoctors: getAllDoctors,
+  getDoctorBySpecial,
+  getDoctorByClinic ,
   getSearchDoctor,
   saveDetailInfoDoctor,
   getDetailDoctorById,

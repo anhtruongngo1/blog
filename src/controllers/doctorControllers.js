@@ -27,6 +27,40 @@ let  getAllDoctors = async(req, res) => {
     })
     }
 }
+let  getDoctorBySpecial = async(req, res) => {
+    try {
+        let { page, size , specialId } = req.query;
+        if(!page || !size){
+            page = 0 ;
+            size = 5 ;
+            }
+        let doctors = await doctorService.getDoctorBySpecial(specialId , page , size) 
+        return res.status(200).json(doctors)
+    } catch (e) {
+        console.log(e)
+        return res.status(404).json({
+        errCode: -1 ,
+        errMessage: 'Erorr'
+    })
+    }
+}
+let  getDoctorByClinic = async(req, res) => {
+    try {
+        let { page, size , clinicId } = req.query;
+        if(!page || !size){
+            page = 0 ;
+            size = 5 ;
+            }
+        let doctors = await doctorService.getDoctorByClinic(clinicId , page , size) 
+        return res.status(200).json(doctors)
+    } catch (e) {
+        console.log(e)
+        return res.status(404).json({
+        errCode: -1 ,
+        errMessage: 'Erorr'
+    })
+    }
+}
 let  getSearchDoctor = async(req, res) => {
     try {
         let doctors = await doctorService.getSearchDoctor(req.query.q , req.query.type) 
@@ -54,6 +88,7 @@ let  getSearchDoctor = async(req, res) => {
     }
     let getDetailDoctorById = async(req, res) => {
         try {
+            
             let infor = await doctorService.getDetailDoctorById(req.query.id) 
             return res.status(200).json(infor)
             
@@ -155,7 +190,9 @@ let sendRemedy = async (req, res) => {
     }
 module.exports = {
     getTopDoctorHome ,
-    getAllDoctors ,
+    getAllDoctors,
+    getDoctorBySpecial,
+    getDoctorByClinic ,
     postInfoDoctors ,
     getDetailDoctorById,
     getSearchDoctor ,

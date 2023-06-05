@@ -59,8 +59,8 @@ let sendAttachment = async(dataSend) => {
         ] ,
         html: `
          <h3> Xin chào khách hàng ${dataSend.patientName} !</h3>
-         <p> Bạn nhận được mail này vì đã đặt lịch khám bệnh trên ...</p>
-         <p>Thông tin đơn thuốc / hóa đơn được gởi trong file đính kèm </p>
+         <p> Bạn nhận được mail này vì đã hoàn thành việc khám bệnh ở hệ thống của chúng tôi </p>
+         <p>Thông tin đơn thuốc / hóa đơn của bạn sẽ được gởi trong file đính kèm </p>
          <div> xin chân thành cảm ơn </div>
 
          `, // html body

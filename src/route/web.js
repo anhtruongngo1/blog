@@ -144,6 +144,10 @@ const initWebRoutes = (app) => {
     "/api/get-list-patient-for-doctor",
     doctorController.getListPatientForDoctor
   );
+  router.get(
+    "/api/get-history-patient-for-doctor",
+    doctorController.getListPatientForDoctor
+  );
 
   // send remedy
   router.post("/api/send-remedy", doctorController.sendRemedy);

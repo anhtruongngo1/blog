@@ -160,7 +160,32 @@ let getProfileDoctorById = async (req, res) => {
 }
 let getListPatientForDoctor = async (req, res) => {
     try {
-        let infor = await doctorService.getListPatientForDoctor(req.query.doctorId , req.query.date)
+        let { page, size  } = req.query;
+        if(!page || !size){
+            page = 0 ;
+            size = 5 ;
+            }
+        let infor = await doctorService.getListPatientForDoctor(req.query.doctorId , req.query.date , req.query.statusId , page , size)
+        return res.status(200).json(
+            infor
+        )
+          
+      } catch (e) {
+          console.log(e);
+          return res.status(200).json({
+              errCode: -1,
+              errMessage: 'Erorr from sever'
+          })
+      }
+}
+let getListHistoryPatient = async (req, res) => {
+    try {
+        let { page, size  } = req.query;
+        if(!page || !size){
+            page = 0 ;
+            size = 5 ;
+            }
+        let infor = await doctorService.getListHistoryPatient(req.query.doctorId , req.query.date , req.query.statusId , page , size)
         return res.status(200).json(
             infor
         )

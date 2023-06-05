@@ -28,12 +28,6 @@ let getTopDoctorHome = (limitInput) => {
         raw: true,
         nest: true,
       });
-      if (users && users.length > 0) {
-        users.map((item) => {
-          item.image = Buffer.from(item.image, "base64").toString("binary");
-          return item;
-        });
-      }
 
       resolve({
         errCode: 0,
@@ -448,9 +442,6 @@ let getDetailDoctorById = (inputId) => {
           raw: false,
           nest: true,
         });
-        if (data && data.image) {
-          data.image = Buffer.from(data.image, "base64").toString("binary");
-        }
 
         resolve({
           errCode: 0,
@@ -640,9 +631,7 @@ let getProfileDoctorById = (inputId) => {
             },
           ],
         });
-        if (data && data.image) {
-          data.image = Buffer.from(data.image, "base64").toString("binary");
-        }
+
         if (!data) data = {};
         resolve({
           errCode: 0,
@@ -655,18 +644,33 @@ let getProfileDoctorById = (inputId) => {
   });
 };
 
-let getListPatientForDoctor = (doctorId, date) => {
+let getListPatientForDoctor = (doctorId, date , statusId , page , size) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!doctorId || !date) {
+      if (!doctorId || !date || !statusId ) {
         resolve({
           errCode: 1,
           errMessage: "missing parameter id",
         });
       } else {
-        let data = await db.booking.findAll({
+        const pageAsNumber = Number.parseInt(page);
+        const sizeAsNumber = Number.parseInt(size);
+  
+        // let page = 0 ;
+        if (!Number.isNaN(pageAsNumber) && pageAsNumber > 0) {
+          page = pageAsNumber;
+        }
+        //let size = 10 ;
+        if (
+          !Number.isNaN(sizeAsNumber) &&
+          sizeAsNumber > 0 &&
+          sizeAsNumber < 10
+        ) {
+          size = sizeAsNumber;
+        }
+        let data = await db.booking.findAndCountAll({
           where: {
-            statusId: "S2",
+            statusId: statusId,
             doctorId: doctorId,
             date: date,
           },
@@ -691,11 +695,86 @@ let getListPatientForDoctor = (doctorId, date) => {
           ],
           raw: false,
           nest: true,
+          limit: size,
+          offset: page * size,
+          order: [["createdAt", "DESC"]],
         });
 
         resolve({
           errCode: 0,
-          data: data,
+          data: {
+            data: data.rows,
+            totalPages: Math.ceil(data.count / size),
+          },
+        });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+let getListHistoryPatient = (doctorId, date , statusId , page , size) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!doctorId || !date || !statusId ) {
+        resolve({
+          errCode: 1,
+          errMessage: "missing parameter id",
+        });
+      } else {
+        const pageAsNumber = Number.parseInt(page);
+        const sizeAsNumber = Number.parseInt(size);
+  
+        // let page = 0 ;
+        if (!Number.isNaN(pageAsNumber) && pageAsNumber > 0) {
+          page = pageAsNumber;
+        }
+        //let size = 10 ;
+        if (
+          !Number.isNaN(sizeAsNumber) &&
+          sizeAsNumber > 0 &&
+          sizeAsNumber < 10
+        ) {
+          size = sizeAsNumber;
+        }
+        let data = await db.booking.findAndCountAll({
+          where: {
+            statusId: statusId,
+            doctorId: doctorId,
+            date: date,
+          },
+          include: [
+            {
+              model: db.User,
+              as: "patientData",
+              attributes: ["email", "firstName", "address", "gender"],
+              include: [
+                {
+                  model: db.Allcode,
+                  as: "genderData",
+                  attributes: ["valueEn", "valueVi"],
+                },
+              ],
+            },
+            {
+              model: db.Allcode,
+              as: "timeTypeDataPatient",
+              attributes: ["valueEn", "valueVi"],
+            },
+          ],
+          raw: false,
+          nest: true,
+          limit: size,
+          offset: page * size,
+          order: [["createdAt", "DESC"]],
+        });
+
+        resolve({
+          errCode: 0,
+          data: {
+            data: data.rows,
+            totalPages: Math.ceil(data.count / size),
+          },
         });
       }
     } catch (e) {

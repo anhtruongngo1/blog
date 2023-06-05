@@ -28,7 +28,22 @@ let postBookAppointment = (data) => {
                     doctorName: data.doctorName,
                     redirectLink : buildUrlEmail(data.doctorId , token)
                 })
+                      //update schedule
+                      let dataSchedule = await db.schedule.findOne({
+                        where: {
+                            doctorId: data.doctorId,
+                            date: data.date,
+                            timeType : data.timeType
+                          },
+                          raw: false,
 
+                      })
+                if (dataSchedule) {
+                    dataSchedule.currentNumber = '1'                    
+                    await dataSchedule.save();
+
+
+                }
 
                 //upsert user
                 let user = await db.User.findOrCreate({
@@ -42,22 +57,19 @@ let postBookAppointment = (data) => {
                     },
 
                 });
+          
 
                 // create booking recod
                 if (user && user[0]) {
-                    await db.booking.findOrCreate({
-                        where: { patientId: user[0].id },
-                        defaults: {
-                            
+                const handle =    await db.booking.create({                        
                             statusId: 'S1',
                             doctorId: data.doctorId,
                             patientId:user[0].id ,
                             date: data.date ,
                             timeType: data.timeType ,
                             token : token
-                        }
                         
-                    })         
+                    })      
                     setTimeout(async() => {
                         let check = await db.booking.findOne({
                             where: {
@@ -70,11 +82,13 @@ let postBookAppointment = (data) => {
                                     token : token 
                                 }
                             })
-                            console.log('đã xóa rồi');
+                            dataSchedule.currentNumber = '0'
+                            await dataSchedule.save();
+
+
                         } else {
-                            console.log('nooooo');
                         }
-                      }, 600000);  }
+                      }, 60000);  }
                 resolve({
                     errCode: 0,
                     errMessage : 'save infor patient success'              

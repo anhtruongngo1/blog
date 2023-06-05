@@ -123,6 +123,14 @@ let handleBlogDetails = (blogId) => {
     try {
       const blog = await db.Blog.findOne({
         where: { id: blogId },
+        include: [
+          {
+            model: db.User,
+            attributes: ["image", "firstName", "lastName"],
+          },
+        ],
+        raw: true,
+        nest: true,
       });
       // if (blogs && blogs.length > 0) {
       //   blogs.map(item => {

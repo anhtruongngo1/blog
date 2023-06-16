@@ -146,11 +146,13 @@ const initWebRoutes = (app) => {
   );
   router.get(
     "/api/get-history-patient-for-doctor",
-    doctorController.getListPatientForDoctor
+    doctorController.getListHistoryPatient
   );
+  // get list history patient
+ 
 
   // send remedy
-  router.post("/api/send-remedy", doctorController.sendRemedy);
+  router.post("/api/send-remedy",uploader.single("image"), doctorController.sendRemedy);
 
   return app.use("/", router);
 };

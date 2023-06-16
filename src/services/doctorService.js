@@ -713,10 +713,10 @@ let getListPatientForDoctor = (doctorId, date , statusId , page , size) => {
     }
   });
 };
-let getListHistoryPatient = (doctorId, date , statusId , page , size) => {
+let getListHistoryPatient = (doctorId, date  , page , size) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!doctorId || !date || !statusId ) {
+      if (!doctorId || !date ) {
         resolve({
           errCode: 1,
           errMessage: "missing parameter id",
@@ -737,32 +737,20 @@ let getListHistoryPatient = (doctorId, date , statusId , page , size) => {
         ) {
           size = sizeAsNumber;
         }
-        let data = await db.booking.findAndCountAll({
+        let data = await db.history.findAndCountAll({
           where: {
-            statusId: statusId,
             doctorId: doctorId,
             date: date,
           },
           include: [
             {
               model: db.User,
-              as: "patientData",
-              attributes: ["email", "firstName", "address", "gender"],
-              include: [
-                {
-                  model: db.Allcode,
-                  as: "genderData",
-                  attributes: ["valueEn", "valueVi"],
-                },
-              ],
-            },
-            {
-              model: db.Allcode,
-              as: "timeTypeDataPatient",
-              attributes: ["valueEn", "valueVi"],
-            },
+              as: "patientHistoryData",
+              attributes: ["email", "firstName", "address"],
+            }
+
           ],
-          raw: false,
+          raw: true,
           nest: true,
           limit: size,
           offset: page * size,
@@ -782,7 +770,7 @@ let getListHistoryPatient = (doctorId, date , statusId , page , size) => {
     }
   });
 };
-let sendRemedy = (data) => {
+let sendRemedy = (data ,image) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!data.email || !data.doctorId || !data.patientId || !data.timeType) {
@@ -805,6 +793,17 @@ let sendRemedy = (data) => {
           appointment.statusId = "S3";
           await appointment.save();
         }
+        // set history
+        await db.history.create({
+          patientId: data.patientId,
+          doctorId: data.doctorId,
+          date: data.date,
+          files : image.path ? image.path : ''
+        });
+        resolve({
+          errCode: 0,
+          errMessage: "ok",
+        });
 
         // send email remedy
         await emailService.sendAttachment(data);
@@ -833,5 +832,6 @@ module.exports = {
   getExtraInforDoctorById,
   getProfileDoctorById,
   getListPatientForDoctor,
+  getListHistoryPatient ,
   sendRemedy,
 };

@@ -26,6 +26,9 @@ module.exports = {
       files: {
         type: Sequelize.TEXT,
       },
+      date: {
+        type: Sequelize.STRING,
+      },
 
       createdAt: {
         allowNull: false,

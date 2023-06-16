@@ -185,7 +185,7 @@ let getListHistoryPatient = async (req, res) => {
             page = 0 ;
             size = 5 ;
             }
-        let infor = await doctorService.getListHistoryPatient(req.query.doctorId , req.query.date , req.query.statusId , page , size)
+        let infor = await doctorService.getListHistoryPatient(req.query.doctorId , req.query.date  , page , size)
         return res.status(200).json(
             infor
         )
@@ -200,7 +200,8 @@ let getListHistoryPatient = async (req, res) => {
 }
 let sendRemedy = async (req, res) => {
     try {
-        let infor = await doctorService.sendRemedy(req.body)
+        const image = req.file
+        let infor = await doctorService.sendRemedy(req.body , image)
         return res.status(200).json(
             infor
         )
@@ -226,5 +227,6 @@ module.exports = {
     getExtraInforDoctorById,
     getProfileDoctorById,
     getListPatientForDoctor,
+    getListHistoryPatient,
     sendRemedy
 }

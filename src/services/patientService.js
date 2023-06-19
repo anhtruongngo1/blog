@@ -103,7 +103,7 @@ let postBookAppointment = (data) => {
 let postVerifyBookAppointment = (data) => {
     return new Promise( async(resolve, reject) => {
         try {
-            if (!data.token && !data.doctorId ) {
+            if (!data.token ) {
                 resolve({
                     errCode: 1,
                     errMessage : 'missing parameters'
@@ -111,7 +111,6 @@ let postVerifyBookAppointment = (data) => {
             } else {
                 let appointment = await db.booking.findOne({
                     where: {
-                        doctorId: data.doctorId,
                         token: data.token,
                         statusId: 'S1'
                     },
@@ -130,12 +129,7 @@ let postVerifyBookAppointment = (data) => {
                         errMessage : 'appointment has already been exits'
                     })
                 }
-
-
-            }
-             
-
-            
+            }         
          } catch (e) {
             reject(e)
          }

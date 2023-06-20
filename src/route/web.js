@@ -149,8 +149,6 @@ const initWebRoutes = (app) => {
     doctorController.getListHistoryPatient
   );
   // get list history patient
- 
-
   // send remedy
   router.post("/api/send-remedy",uploader.single("image"), doctorController.sendRemedy);
 

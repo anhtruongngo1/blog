@@ -15,14 +15,14 @@ let postInfoBlog = async(req, res) => {
     }
 }
 let getListBlog= async (req, res) => {
-    let {page , size  , q} = req.query;
+    let {page , size  , q , userId} = req.query;
 
     if(!page || !size){
     page = 0 ;
     size = 5 ;
     }
 
-    let blog = await blogService.getListBlog(page,size  , q)
+    let blog = await blogService.getListBlog(page,size  , q , userId)
 
 
     return res.status(200).json({

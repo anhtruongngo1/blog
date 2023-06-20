@@ -28,7 +28,7 @@ let postInfoBlog = (data , image) => {
     }
   });
 };
-let getListBlog = (page, size, q) => {
+let getListBlog = (page, size, q , userId) => {
   return new Promise(async (resolve, reject) => {
     try {
       const pageAsNumber = Number.parseInt(page);
@@ -46,48 +46,99 @@ let getListBlog = (page, size, q) => {
       ) {
         size = sizeAsNumber;
       }
-      if (q) {
-        const blog = await db.Blog.findAndCountAll({
-          where: {
-            [Op.or]: [{ title: { [Op.like]: "%" + q + "%" } }],
-          },
-          include: [
-            {
-              model: db.User,
-              attributes: ["image", "firstName", "lastName" ],
-            },
-          ],
-          raw: true,
-          nest: true,
 
-          limit: size,
-          offset: page * size,
-          order: [["createdAt", "DESC"]],
-        });
-        resolve({
-          data: blog.rows,
-          totalPages: Math.ceil(blog.count / size),
-        });
+      if (userId) {
+        if (q) {
+          const blog = await db.Blog.findAndCountAll({
+            where: {
+              userId : userId ,
+              [Op.or]: [{ title: { [Op.like]: "%" + q + "%" } }],
+            },
+            include: [
+              {
+                model: db.User,
+                attributes: ["image", "firstName", "lastName" ],
+              },
+            ],
+            raw: true,
+            nest: true,
+  
+            limit: size,
+            offset: page * size,
+            order: [["createdAt", "DESC"]],
+          });
+          resolve({
+            data: blog.rows,
+            totalPages: Math.ceil(blog.count / size),
+          });
+        } else {
+          const blog = await db.Blog.findAndCountAll({
+            where: {
+             userId : userId  
+            },
+            attributes: ["createdAt", "title", "content", "thumb" , "id"],
+            include: [
+              {
+                model: db.User,
+                attributes: ["image", "firstName", "lastName"],
+              },
+            ],
+            raw: true,
+            nest: true,
+  
+            limit: size,
+            offset: page * size,
+            order: [["createdAt", "DESC"]],
+          });
+          resolve({
+            data: blog.rows,
+            totalPages: Math.ceil(blog.count / size),
+          });
+        }     
       } else {
-        const blog = await db.Blog.findAndCountAll({
-          attributes: ["createdAt", "title", "content", "thumb" , "id"],
-          include: [
-            {
-              model: db.User,
-              attributes: ["image", "firstName", "lastName"],
+        if (q) {
+          const blog = await db.Blog.findAndCountAll({
+            where: {
+              [Op.or]: [{ title: { [Op.like]: "%" + q + "%" } }],
             },
-          ],
-          raw: true,
-          nest: true,
-
-          limit: size,
-          offset: page * size,
-          order: [["createdAt", "DESC"]],
-        });
-        resolve({
-          data: blog.rows,
-          totalPages: Math.ceil(blog.count / size),
-        });
+            include: [
+              {
+                model: db.User,
+                attributes: ["image", "firstName", "lastName" ],
+              },
+            ],
+            raw: true,
+            nest: true,
+  
+            limit: size,
+            offset: page * size,
+            order: [["createdAt", "DESC"]],
+          });
+          resolve({
+            data: blog.rows,
+            totalPages: Math.ceil(blog.count / size),
+          });
+        } else {
+          const blog = await db.Blog.findAndCountAll({
+            attributes: ["createdAt", "title", "content", "thumb" , "id"],
+            include: [
+              {
+                model: db.User,
+                attributes: ["image", "firstName", "lastName"],
+              },
+            ],
+            raw: true,
+            nest: true,
+  
+            limit: size,
+            offset: page * size,
+            order: [["createdAt", "DESC"]],
+          });
+          resolve({
+            data: blog.rows,
+            totalPages: Math.ceil(blog.count / size),
+          });
+        } 
       }
     } catch (error) {
       reject(error);

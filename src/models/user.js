@@ -26,16 +26,16 @@ module.exports = (sequelize, DataTypes) => {
         }),
         User.hasOne(models.Markdown, { foreignKey: "doctorId" }),
         User.hasOne(models.Blog, { foreignKey: "userId" }),
-        User.hasOne(models.doctorInfor, { foreignKey: "doctorId" }),
-        User.hasMany(models.schedule, {
+        User.hasOne(models.DoctorInfor, { foreignKey: "doctorId" }),
+        User.hasMany(models.Schedule, {
           foreignKey: "doctorId",
           as: "doctorData",
         });
-      User.hasMany(models.booking, {
+      User.hasMany(models.Booking, {
         foreignKey: "patientId",
         as: "patientData",
       });
-      User.hasMany(models.history, {
+      User.hasMany(models.History, {
         foreignKey: "patientId",
         as: "patientHistoryData",
       });

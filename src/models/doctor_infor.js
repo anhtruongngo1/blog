@@ -1,7 +1,7 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class doctorInfor extends Model {
+  class DoctorInfor extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,31 +9,31 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      doctorInfor.belongsTo(models.User, { foreignKey: 'doctorId' })
+      DoctorInfor.belongsTo(models.User, { foreignKey: 'doctorId' })
 
-      doctorInfor.belongsTo(models.Allcode, {
+      DoctorInfor.belongsTo(models.Allcode, {
         foreignKey: "priceId",
         targetKey: "keyMap",
         as: "priceData",
       }),
-        doctorInfor.belongsTo(models.Allcode, {
+        DoctorInfor.belongsTo(models.Allcode, {
           foreignKey: "paymentId",
           targetKey: "keyMap",
           as: "paymentData",
         }),
-        doctorInfor.belongsTo(models.Allcode, {
+        DoctorInfor.belongsTo(models.Allcode, {
           foreignKey: "provinceId",
           targetKey: "keyMap",
           as: "provinceData",
         });
-        doctorInfor.belongsTo(models.specialty, {
+        DoctorInfor.belongsTo(models.Specialty, {
           foreignKey: "specialtyId",
           targetKey: "id",
           as: "specialtyData",
         });
     }
   }
-  doctorInfor.init(
+  DoctorInfor.init(
     {
       specialtyId: DataTypes.INTEGER,
       doctorId: DataTypes.INTEGER,
@@ -48,8 +48,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "doctorInfor",
+      modelName: "DoctorInfor",
     }
   );
-  return doctorInfor;
+  return DoctorInfor;
 };

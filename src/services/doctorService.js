@@ -173,9 +173,6 @@ let saveDetailInfoDoctor = (inputData) => {
         !inputData.specialtyId ||
         !inputData.paymentId ||
         !inputData.provinceId ||
-        !inputData.nameClinic ||
-        !inputData.addressClinic ||
-        !inputData.note ||
         !inputData.clinicId
       ) {
         resolve({

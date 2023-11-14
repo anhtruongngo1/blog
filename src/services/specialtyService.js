@@ -131,6 +131,21 @@ let getAllSpecialty = (page, size) => {
     }
   });
 };
+
+let getAllSpecialtyAll = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let specials = await db.Specialty.findAll();
+            resolve({
+                errCode: 0,
+                data: specials,
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
 let getDetailSpecialtyById = (inputId, location) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -188,9 +203,10 @@ let getDetailSpecialtyById = (inputId, location) => {
   });
 };
 module.exports = {
-  createSpecialty,
-  getAllSpecialty,
-  getDetailSpecialtyById,
-  deleteSpecialty,
-  handleEditSpecial,
+    createSpecialty,
+    getAllSpecialty,
+    getDetailSpecialtyById,
+    deleteSpecialty,
+    handleEditSpecial,
+    getAllSpecialtyAll,
 };

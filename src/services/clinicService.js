@@ -64,6 +64,19 @@ let getAllClinic = (page, size) => {
     }
   });
 };
+let getAllClinicAll = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let clinics = await db.Clinic.findAll();
+            resolve({
+                errCode: 0,
+                data: clinics,
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
 let deleteClinic = (clinicId) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -180,9 +193,10 @@ let getDetailClinicById = (inputId) => {
 };
 
 module.exports = {
-  createClinic,
-  getAllClinic,
-  getDetailClinicById,
-  deleteClinic,
-  handleEditClinic,
+    createClinic,
+    getAllClinic,
+    getDetailClinicById,
+    deleteClinic,
+    handleEditClinic,
+    getAllClinicAll
 };

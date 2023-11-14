@@ -90,6 +90,11 @@ const initWebRoutes = (app) => {
   );
   // get specialty
   router.get("/api/get-all-specialty", specialtyControllers.getAllSpecialty);
+  // get all specialty
+   router.get(
+       "/api/get-all-specialty-all",
+       specialtyControllers.getAllSpecialtyAll
+   );
   // delete specialty
   router.get("/api/delete-specialty", specialtyControllers.deleteSpecialty);
   // edit specialty
@@ -121,6 +126,9 @@ const initWebRoutes = (app) => {
   );
   // get clinic
   router.get("/api/get-all-clinic", clinicControllers.getAllClinic);
+  // get clinic all
+  router.get("/api/get-all-clinic-all", clinicControllers.getAllClinicAll);
+
   // get infor doctor clinic
   router.get(
     "/api/get-detail-clinic-by-id",

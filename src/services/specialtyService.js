@@ -1,19 +1,15 @@
 import db from "../models/index";
 
-let createSpecialty = (data , image) => {
+let createSpecialty = (data, image) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (
-        !data.name ||
-        !image ||
-        !data.descriptionHTML
-      ) {
+      if (!data.name || !image || !data.descriptionHTML) {
         resolve({
           errCode: 1,
           errMessage: "missing parameters",
         });
       } else {
-        await db.specialty.create({
+        await db.Specialty.create({
           name: data.name,
           image: image.path,
           descriptionHTML: data.descriptionHTML,
@@ -32,7 +28,7 @@ let createSpecialty = (data , image) => {
 let deleteSpecialty = (specialId) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let user = await db.specialty.findOne({
+      let user = await db.Specialty.findOne({
         where: { id: specialId },
       });
       if (!user) {
@@ -41,10 +37,10 @@ let deleteSpecialty = (specialId) => {
           errMessage: "the isnt exits",
         });
       }
-      await db.specialty.destroy({
+      await db.Specialty.destroy({
         where: { id: specialId },
       });
-      await db.doctorInfor.destroy({
+      await db.DoctorInfor.destroy({
         where: { specialtyId: specialId },
       });
       resolve({
@@ -56,7 +52,7 @@ let deleteSpecialty = (specialId) => {
     }
   });
 };
-let handleEditSpecial = (data , image) => {
+let handleEditSpecial = (data, image) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!data.id) {
@@ -65,7 +61,7 @@ let handleEditSpecial = (data , image) => {
           errMessage: "missing required param",
         });
       }
-      let special = await db.specialty.findOne({
+      let special = await db.Specialty.findOne({
         where: { id: data.id },
         raw: false,
       });
@@ -73,13 +69,12 @@ let handleEditSpecial = (data , image) => {
         if (image) {
           special.image = image.path;
           special.name = data.name;
-          special.descriptionHTML = data.descriptionHTML
-  
+          special.descriptionHTML = data.descriptionHTML;
+
           await special.save();
-        }
-        else {
+        } else {
           special.name = data.name;
-          special.descriptionHTML = data.descriptionHTML
+          special.descriptionHTML = data.descriptionHTML;
           await special.save();
         }
         resolve({
@@ -116,7 +111,7 @@ let getAllSpecialty = (page, size) => {
         size = sizeAsNumber;
       }
 
-      let list = await db.specialty.findAndCountAll({
+      let list = await db.Specialty.findAndCountAll({
         raw: true,
         nest: true,
         limit: size,
@@ -136,6 +131,21 @@ let getAllSpecialty = (page, size) => {
     }
   });
 };
+
+let getAllSpecialtyAll = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let specials = await db.Specialty.findAll();
+            resolve({
+                errCode: 0,
+                data: specials,
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
 let getDetailSpecialtyById = (inputId, location) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -145,14 +155,14 @@ let getDetailSpecialtyById = (inputId, location) => {
           errMessage: "missing parameters",
         });
       } else {
-        let data = await db.specialty.findOne({
+        let data = await db.Specialty.findOne({
           where: {
             id: inputId,
           },
           attributes: ["descriptionHTML", "descriptionMarkdown"],
           //   include: [
           //         {
-          //             model: db.doctorInfor , as : 'specialtyData' ,
+          //             model: db.DoctorInfor , as : 'specialtyData' ,
           //             attributes: ['doctorId' , 'provinceId'],
           //         },
           //     ],
@@ -162,14 +172,14 @@ let getDetailSpecialtyById = (inputId, location) => {
         if (data) {
           let doctorSpecialty = [];
           if (location === "ALL") {
-            doctorSpecialty = await db.doctorInfor.findAll({
+            doctorSpecialty = await db.DoctorInfor.findAll({
               where: {
                 specialtyId: inputId,
               },
               attributes: ["doctorId", "provinceId"],
             });
           } else {
-            doctorSpecialty = await db.doctorInfor.findAll({
+            doctorSpecialty = await db.DoctorInfor.findAll({
               where: {
                 specialtyId: inputId,
                 provinceId: location,
@@ -193,9 +203,10 @@ let getDetailSpecialtyById = (inputId, location) => {
   });
 };
 module.exports = {
-  createSpecialty,
-  getAllSpecialty,
-  getDetailSpecialtyById,
-  deleteSpecialty,
-  handleEditSpecial
+    createSpecialty,
+    getAllSpecialty,
+    getDetailSpecialtyById,
+    deleteSpecialty,
+    handleEditSpecial,
+    getAllSpecialtyAll,
 };

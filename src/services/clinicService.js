@@ -1,20 +1,15 @@
 import db from "../models/index";
 
-let createClinic = (data , image) => {
+let createClinic = (data, image) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (
-        !data.name ||
-        !data.address ||
-        !image ||
-        !data.descriptionHTML
-      ) {
+      if (!data.name || !data.address || !image || !data.descriptionHTML) {
         resolve({
           errCode: 1,
           errMessage: "missing parameters",
         });
       } else {
-        await db.clinic.create({
+        await db.Clinic.create({
           name: data.name,
           address: data.address,
           image: image.path,
@@ -30,7 +25,7 @@ let createClinic = (data , image) => {
     }
   });
 };
-let getAllClinic = (page , size) => {
+let getAllClinic = (page, size) => {
   return new Promise(async (resolve, reject) => {
     try {
       const pageAsNumber = Number.parseInt(page);
@@ -49,7 +44,7 @@ let getAllClinic = (page , size) => {
         size = sizeAsNumber;
       }
 
-      let list = await db.clinic.findAndCountAll({
+      let list = await db.Clinic.findAndCountAll({
         raw: true,
         nest: true,
         limit: size,
@@ -69,10 +64,23 @@ let getAllClinic = (page , size) => {
     }
   });
 };
+let getAllClinicAll = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let clinics = await db.Clinic.findAll();
+            resolve({
+                errCode: 0,
+                data: clinics,
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
 let deleteClinic = (clinicId) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let user = await db.clinic.findOne({
+      let user = await db.Clinic.findOne({
         where: { id: clinicId },
       });
       if (!user) {
@@ -81,10 +89,10 @@ let deleteClinic = (clinicId) => {
           errMessage: "the isnt exits",
         });
       }
-      await db.clinic.destroy({
+      await db.Clinic.destroy({
         where: { id: clinicId },
       });
-      await db.doctorInfor.destroy({
+      await db.DoctorInfor.destroy({
         where: { clinicId: clinicId },
       });
       resolve({
@@ -96,7 +104,7 @@ let deleteClinic = (clinicId) => {
     }
   });
 };
-let handleEditClinic = (data , image) => {
+let handleEditClinic = (data, image) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!data.id) {
@@ -105,7 +113,7 @@ let handleEditClinic = (data , image) => {
           errMessage: "missing required param",
         });
       }
-      let clinic = await db.clinic.findOne({
+      let clinic = await db.Clinic.findOne({
         where: { id: data.id },
         raw: false,
       });
@@ -114,15 +122,14 @@ let handleEditClinic = (data , image) => {
           clinic.image = image.path;
           clinic.name = data.name;
           clinic.address = data.address;
-          clinic.descriptionHTML = data.descriptionHTML
-  
+          clinic.descriptionHTML = data.descriptionHTML;
+
           await clinic.save();
-        }
-        else {
+        } else {
           clinic.name = data.name;
           clinic.address = data.address;
 
-          clinic.descriptionHTML = data.descriptionHTML
+          clinic.descriptionHTML = data.descriptionHTML;
           await clinic.save();
         }
         resolve({
@@ -149,7 +156,7 @@ let getDetailClinicById = (inputId) => {
           errMessage: "missing parameters",
         });
       } else {
-        let data = await db.clinic.findOne({
+        let data = await db.Clinic.findOne({
           where: {
             id: inputId,
           },
@@ -162,7 +169,7 @@ let getDetailClinicById = (inputId) => {
         });
         if (data) {
           let doctorClinic = [];
-          doctorClinic = await db.doctorInfor.findAll({
+          doctorClinic = await db.DoctorInfor.findAll({
             where: {
               clinicId: inputId,
             },
@@ -186,9 +193,10 @@ let getDetailClinicById = (inputId) => {
 };
 
 module.exports = {
-  createClinic,
-  getAllClinic,
-  getDetailClinicById,
-  deleteClinic,
-  handleEditClinic
+    createClinic,
+    getAllClinic,
+    getDetailClinicById,
+    deleteClinic,
+    handleEditClinic,
+    getAllClinicAll
 };

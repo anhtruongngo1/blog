@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class history extends Model {
+  class History extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,10 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      history.belongsTo(models.User, { foreignKey: 'patientId', targetKey: 'id', as: 'patientHistoryData' })
+      History.belongsTo(models.User, { foreignKey: 'patientId', targetKey: 'id', as: 'patientHistoryData' })
     }
   }
-  history.init({
+  History.init({
     patientId: DataTypes.INTEGER,
     doctorId : DataTypes.INTEGER,
     description: DataTypes.TEXT,
@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     date : DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'history',
+    modelName: 'History',
   });
-  return history;
+  return History;
 };

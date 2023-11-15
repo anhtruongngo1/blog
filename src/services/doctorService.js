@@ -56,7 +56,7 @@ let getAllDoctors = () => {
     }
   });
 };
-let getDoctorBySpecial = (id , page , size) => {
+let getDoctorBySpecial = (id, page, size) => {
   return new Promise(async (resolve, reject) => {
     try {
       const pageAsNumber = Number.parseInt(page);
@@ -74,11 +74,12 @@ let getDoctorBySpecial = (id , page , size) => {
       ) {
         size = sizeAsNumber;
       }
-      let doctors = await db.doctorInfor.findAndCountAll({
+      let doctors = await db.DoctorInfor.findAndCountAll({
         where: { specialtyId: id },
         include: [
           {
-            model: db.User, attributes: {
+            model: db.User,
+            attributes: {
               exclude: ["password"],
             },
             include: [
@@ -87,8 +88,7 @@ let getDoctorBySpecial = (id , page , size) => {
                 as: "positionData",
                 attributes: ["valueEn", "valueVi"],
               },
-            ]
- 
+            ],
           },
         ],
         raw: true,
@@ -109,7 +109,7 @@ let getDoctorBySpecial = (id , page , size) => {
     }
   });
 };
-let getDoctorByClinic = (id , page , size) => {
+let getDoctorByClinic = (id, page, size) => {
   return new Promise(async (resolve, reject) => {
     try {
       const pageAsNumber = Number.parseInt(page);
@@ -127,11 +127,12 @@ let getDoctorByClinic = (id , page , size) => {
       ) {
         size = sizeAsNumber;
       }
-      let doctors = await db.doctorInfor.findAndCountAll({
+      let doctors = await db.DoctorInfor.findAndCountAll({
         where: { clinicId: id },
         include: [
           {
-            model: db.User, attributes: {
+            model: db.User,
+            attributes: {
               exclude: ["password"],
             },
             include: [
@@ -140,8 +141,7 @@ let getDoctorByClinic = (id , page , size) => {
                 as: "positionData",
                 attributes: ["valueEn", "valueVi"],
               },
-            ]
- 
+            ],
           },
         ],
         raw: true,
@@ -173,9 +173,6 @@ let saveDetailInfoDoctor = (inputData) => {
         !inputData.specialtyId ||
         !inputData.paymentId ||
         !inputData.provinceId ||
-        !inputData.nameClinic ||
-        !inputData.addressClinic ||
-        !inputData.note ||
         !inputData.clinicId
       ) {
         resolve({
@@ -209,7 +206,7 @@ let saveDetailInfoDoctor = (inputData) => {
 
         // upsert to info table
 
-        let doctorInfor = await db.doctorInfor.findOne({
+        let doctorInfor = await db.DoctorInfor.findOne({
           where: {
             doctorId: inputData.doctorId,
           },
@@ -233,7 +230,7 @@ let saveDetailInfoDoctor = (inputData) => {
           });
         } else {
           // create
-          await db.doctorInfor.create({
+          await db.DoctorInfor.create({
             doctorId: inputData.doctorId,
             priceId: inputData.priceId,
             provinceId: inputData.provinceId,
@@ -411,7 +408,7 @@ let getDetailDoctorById = (inputId) => {
               attributes: ["valueEn", "valueVi"],
             },
             {
-              model: db.doctorInfor,
+              model: db.DoctorInfor,
               attributes: {
                 exclude: ["id", "doctorId"],
               },
@@ -432,7 +429,7 @@ let getDetailDoctorById = (inputId) => {
                   attributes: ["valueEn", "valueVi"],
                 },
                 {
-                  model: db.specialty,
+                  model: db.Specialty,
                   as: "specialtyData",
                   attributes: ["name"],
                 },
@@ -472,7 +469,7 @@ let bulkCreateSchedule = (data) => {
           });
         }
         // get all exis
-        // let existing = await db.schedule.findAll({
+        // let existing = await db.Schedule.findAll({
         //   where: { doctorId: data.doctorId, date: data.date },
         //   attributes: ["timeType", "date", "doctorId", "maxNumber"],
         //   raw: true,
@@ -481,11 +478,11 @@ let bulkCreateSchedule = (data) => {
         // let toCreate = _.differenceWith(schedule, existing, (a, b) => {
         //   return a.timeType === b.timeType && +a.date === +b.date;
         // });
-        await db.schedule.destroy({
+        await db.Schedule.destroy({
           where: { doctorId: data.doctorId, date: data.date },
         });
         if (data.arrSchedule && data.arrSchedule.length > 0) {
-          await db.schedule.bulkCreate(data.arrSchedule);
+          await db.Schedule.bulkCreate(data.arrSchedule);
         }
         resolve({
           errCode: 0,
@@ -506,7 +503,7 @@ let getScheduleByDate = (id, dateInput) => {
           errMessage: "missing parameter",
         });
       } else {
-        let dataSchedule = await db.schedule.findAll({
+        let dataSchedule = await db.Schedule.findAll({
           where: {
             doctorId: id,
             date: dateInput,
@@ -547,7 +544,7 @@ let getExtraInforDoctorById = (inputId) => {
           errMessage: "missing parameter id",
         });
       } else {
-        let data = await db.doctorInfor.findOne({
+        let data = await db.DoctorInfor.findOne({
           where: { doctorId: inputId },
           raw: false,
           nest: true,
@@ -607,7 +604,7 @@ let getProfileDoctorById = (inputId) => {
               attributes: ["valueEn", "valueVi"],
             },
             {
-              model: db.doctorInfor,
+              model: db.DoctorInfor,
               attributes: {
                 exclude: ["id", "doctorId"],
               },
@@ -644,10 +641,10 @@ let getProfileDoctorById = (inputId) => {
   });
 };
 
-let getListPatientForDoctor = (doctorId, date , statusId , page , size) => {
+let getListPatientForDoctor = (doctorId, date, statusId, page, size) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!doctorId || !date || !statusId ) {
+      if (!doctorId || !date || !statusId) {
         resolve({
           errCode: 1,
           errMessage: "missing parameter id",
@@ -655,7 +652,7 @@ let getListPatientForDoctor = (doctorId, date , statusId , page , size) => {
       } else {
         const pageAsNumber = Number.parseInt(page);
         const sizeAsNumber = Number.parseInt(size);
-  
+
         // let page = 0 ;
         if (!Number.isNaN(pageAsNumber) && pageAsNumber > 0) {
           page = pageAsNumber;
@@ -668,7 +665,7 @@ let getListPatientForDoctor = (doctorId, date , statusId , page , size) => {
         ) {
           size = sizeAsNumber;
         }
-        let data = await db.booking.findAndCountAll({
+        let data = await db.Booking.findAndCountAll({
           where: {
             statusId: statusId,
             doctorId: doctorId,
@@ -713,10 +710,10 @@ let getListPatientForDoctor = (doctorId, date , statusId , page , size) => {
     }
   });
 };
-let getListHistoryPatient = (doctorId, date  , page , size) => {
+let getListHistoryPatient = (doctorId, date, page, size) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!doctorId || !date ) {
+      if (!doctorId || !date) {
         resolve({
           errCode: 1,
           errMessage: "missing parameter id",
@@ -724,7 +721,7 @@ let getListHistoryPatient = (doctorId, date  , page , size) => {
       } else {
         const pageAsNumber = Number.parseInt(page);
         const sizeAsNumber = Number.parseInt(size);
-  
+
         // let page = 0 ;
         if (!Number.isNaN(pageAsNumber) && pageAsNumber > 0) {
           page = pageAsNumber;
@@ -737,7 +734,7 @@ let getListHistoryPatient = (doctorId, date  , page , size) => {
         ) {
           size = sizeAsNumber;
         }
-        let data = await db.history.findAndCountAll({
+        let data = await db.History.findAndCountAll({
           where: {
             doctorId: doctorId,
             date: date,
@@ -747,8 +744,7 @@ let getListHistoryPatient = (doctorId, date  , page , size) => {
               model: db.User,
               as: "patientHistoryData",
               attributes: ["email", "firstName", "address"],
-            }
-
+            },
           ],
           raw: true,
           nest: true,
@@ -770,7 +766,7 @@ let getListHistoryPatient = (doctorId, date  , page , size) => {
     }
   });
 };
-let sendRemedy = (data ,image) => {
+let sendRemedy = (data, image) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!data.email || !data.doctorId || !data.patientId || !data.timeType) {
@@ -780,7 +776,7 @@ let sendRemedy = (data ,image) => {
         });
       } else {
         //update patient status
-        let appointment = await db.booking.findOne({
+        let appointment = await db.Booking.findOne({
           where: {
             doctorId: data.doctorId,
             patientId: data.patientId,
@@ -794,11 +790,11 @@ let sendRemedy = (data ,image) => {
           await appointment.save();
         }
         // set history
-        await db.history.create({
+        await db.History.create({
           patientId: data.patientId,
           doctorId: data.doctorId,
           date: data.date,
-          files : image.path ? image.path : ''
+          files: image.path ? image.path : "",
         });
         resolve({
           errCode: 0,
@@ -823,7 +819,7 @@ module.exports = {
   getTopDoctorHome: getTopDoctorHome,
   getAllDoctors: getAllDoctors,
   getDoctorBySpecial,
-  getDoctorByClinic ,
+  getDoctorByClinic,
   getSearchDoctor,
   saveDetailInfoDoctor,
   getDetailDoctorById,
@@ -832,6 +828,6 @@ module.exports = {
   getExtraInforDoctorById,
   getProfileDoctorById,
   getListPatientForDoctor,
-  getListHistoryPatient ,
+  getListHistoryPatient,
   sendRemedy,
 };

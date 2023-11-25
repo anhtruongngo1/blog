@@ -10,10 +10,11 @@ let createClinic = (data, image) => {
         });
       } else {
         await db.Clinic.create({
-          name: data.name,
-          address: data.address,
-          image: image.path,
-          descriptionHTML: data.descriptionHTML,
+            name: data.name,
+            address: data.address,
+            image: image.path,
+            descriptionHTML: data.descriptionHTML,
+            descriptionMarkdown: data.descriptionMarkdown,
         });
         resolve({
           errCode: 0,

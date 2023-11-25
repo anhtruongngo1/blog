@@ -56,6 +56,7 @@ let postBookAppointment = (data) => {
             gender: data.selectedGender,
             address: data.address,
             firstName: data.fullName,
+            phoneNumber : data.phoneNumber
           },
         });
 
@@ -85,7 +86,7 @@ let postBookAppointment = (data) => {
               await dataSchedule.save();
             } else {
             }
-          }, 60000);
+          }, 600000);
         }
         resolve({
           errCode: 0,

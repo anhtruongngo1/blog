@@ -96,7 +96,7 @@ const initWebRoutes = (app) => {
        specialtyControllers.getAllSpecialtyAll
    );
   // delete specialty
-  router.get("/api/delete-specialty", specialtyControllers.deleteSpecialty);
+  router.delete("/api/delete-specialty", specialtyControllers.deleteSpecialty);
   // edit specialty
   router.post(
     "/api/edit-specialty",
@@ -116,9 +116,8 @@ const initWebRoutes = (app) => {
     clinicControllers.createClinic
   );
   // delete clinic
-  router.get("/api/delete-clinic", clinicControllers.deleteClinic);
+  router.delete("/api/delete-clinic", clinicControllers.deleteClinic);
     //  edit clinic
-   // edit specialty
    router.post(
     "/api/edit-clinic",
     uploader.single("image"),
@@ -142,6 +141,9 @@ const initWebRoutes = (app) => {
     blogControllers.postInfoBlog
   );
   router.get("/api/get-list-blog", blogControllers.getListBlog);
+  // GET ALL LIST BLOG
+    router.get("/api/get-all-blog", blogControllers.getAllBlogs);
+
   router.delete("/api/delete-blog", blogControllers.handleDeleteBlog);
   router.get("/api/get-blog-detail", blogControllers.handleBlogDetails);
   router.put("/api/edit-blog", blogControllers.handleEditBlog);

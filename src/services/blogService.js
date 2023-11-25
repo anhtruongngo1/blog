@@ -145,6 +145,20 @@ let getListBlog = (page, size, q , userId) => {
     }
   });
 };
+let getAllBlogs = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let Blogs = await db.Blog.findAll();
+            resolve({
+                errCode: 0,
+                data: Blogs,
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
 let handleDeleteBlog = (blogId) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -232,9 +246,10 @@ let handleEditBlog = (data) => {
   });
 };
 module.exports = {
-  postInfoBlog,
-  getListBlog,
-  handleDeleteBlog,
-  handleBlogDetails,
-  handleEditBlog
+    postInfoBlog,
+    getListBlog,
+    handleDeleteBlog,
+    handleBlogDetails,
+    handleEditBlog,
+    getAllBlogs,
 };

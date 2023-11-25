@@ -127,7 +127,7 @@ let getAllUsers = (page, size , type , q) => {
       if (
         !Number.isNaN(sizeAsNumber) &&
         sizeAsNumber > 0 &&
-        sizeAsNumber < 10
+        sizeAsNumber < 11
       ) {
         size = sizeAsNumber;
       }

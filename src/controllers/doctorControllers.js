@@ -95,7 +95,7 @@ let postInfoDoctors = async (req, res) => {
     }
 };
 let getDetailDoctorById = async (req, res) => {
-    if (req.query.id == "NaN") {
+    if (req.query.id == "NaN" || req.query.id === undefined) {
         return res.status(400).json("Missing parameter");
     }
     try {
@@ -135,7 +135,7 @@ let getScheduleDoctorByDate = async (req, res) => {
         });
     } catch (e) {
         console.log(e);
-        return res.status(200).json({
+        return res.status(400).json({
             errCode: -1,
             errMessage: "Erorr from sever",
         });

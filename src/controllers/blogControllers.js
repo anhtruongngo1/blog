@@ -31,6 +31,18 @@ let getListBlog= async (req, res) => {
         blog 
     })
 }
+let getAllBlogs = async (req, res) => {
+    try {
+        let blogs = await blogService.getAllBlogs();
+        return res.status(200).json(blogs);
+    } catch (e) {
+        console.log(e);
+        return res.status(404).json({
+            errCode: -1,
+            errMessage: "Erorr",
+        });
+    }
+};
     let handleDeleteBlog = async (req, res) =>{
     if(!req.query.id){
         return res.status(200).json({
@@ -70,6 +82,6 @@ module.exports = {
     getListBlog,
     handleDeleteBlog,
     handleBlogDetails,
-    handleEditBlog
-
-}
+    handleEditBlog,
+    getAllBlogs,
+};

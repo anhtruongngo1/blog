@@ -3,7 +3,7 @@ import emailService from "./emailService";
 import { v4 as uuidv4 } from "uuid";
 
 let buildUrlEmail = (doctorId, token) => {
-  let result = `${process.env.URL_WEBSITE}/verify-Booking?token=${token}&doctorId=${doctorId}`;
+  let result = `${process.env.URL_WEBSITE}/verify-booking?token=${token}&doctorId=${doctorId}`;
   return result;
 };
 
@@ -102,9 +102,9 @@ let postVerifyBookAppointment = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!data.token) {
-        resolve({
-          errCode: 1,
-          errMessage: "missing parameters",
+        reject({
+            errCode: 1,
+            errMessage: "missing parameters",
         });
       } else {
         let appointment = await db.Booking.findOne({
@@ -122,9 +122,9 @@ let postVerifyBookAppointment = (data) => {
             errMessage: "update appointment success",
           });
         } else {
-          resolve({
-            errCode: 2,
-            errMessage: "appointment has already been exits",
+          reject({
+              errCode: 2,
+              errMessage: "appointment has already been exits",
           });
         }
       }

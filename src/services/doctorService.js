@@ -800,14 +800,15 @@ let getListHistoryPatient = (doctorId, date, page, size) => {
         }
     });
 };
-let sendRemedy = (data, image) => {
+let sendRemedy = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
             if (
                 !data.email ||
                 !data.doctorId ||
                 !data.patientId ||
-                !data.timeType
+                !data.timeType ||
+                !data.pdf
             ) {
                 resolve({
                     errCode: 1,
@@ -815,6 +816,7 @@ let sendRemedy = (data, image) => {
                 });
             } else {
                 //update patient status
+                
                 let appointment = await db.Booking.findOne({
                     where: {
                         doctorId: data.doctorId,
@@ -833,13 +835,8 @@ let sendRemedy = (data, image) => {
                     patientId: data.patientId,
                     doctorId: data.doctorId,
                     date: data.date,
-                    files: image.path ? image.path : "",
+                    files: data.pdf,
                 });
-                resolve({
-                    errCode: 0,
-                    errMessage: "ok",
-                });
-
                 // send email remedy
                 await emailService.sendAttachment(data);
 

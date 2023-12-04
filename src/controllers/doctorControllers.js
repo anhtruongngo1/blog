@@ -1,4 +1,6 @@
 import doctorService from "../services/doctorService";
+const multer = require("multer");
+
 let getTopDoctorHome = async (req, res) => {
     let limit = req.query.limit;
     if (!limit) limit = 10;
@@ -220,8 +222,7 @@ let getListHistoryPatient = async (req, res) => {
 };
 let sendRemedy = async (req, res) => {
     try {
-        const image = req.file;
-        let infor = await doctorService.sendRemedy(req.body, image);
+        let infor = await doctorService.sendRemedy(req.body);
         return res.status(200).json(infor);
     } catch (e) {
         console.log(e);

@@ -22,15 +22,6 @@ let handleUserLogin = (email, password) => {
       if (isExist) {
         // user all ready exist
         let user = await db.User.findOne({
-          attributes: [
-            "email",
-            "roleId",
-            "password",
-            "firstName",
-            "lastName",
-            "id",
-            "image"
-          ],
           where: { email: email },
           raw: true,
         });
@@ -75,6 +66,32 @@ let handleUserLogin = (email, password) => {
       reject(error);
     }
   });
+};
+let confirmPassword = (password , email) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            // user all ready exist
+        let user = await db.User.findOne({
+          where: { email: email },
+          raw: true,
+        });
+          if (user) {
+            // compare password
+            let check = await bcrypt.compareSync(password, user.password);
+            if (check) {
+              resolve({
+                  message : "Check password successfully"
+              });
+            } else {
+              reject({
+                  message: "Check password fail",
+              });
+             }
+          }
+        } catch (error) {
+            reject(error);
+        }
+    });
 };
 
 let checkUserEmail = (userEmail) => {
@@ -532,6 +549,7 @@ let getAllCodeService = (typeInput) => {
 };
 module.exports = {
   handleUserLogin,
+  confirmPassword ,
   handleGetUserDetails,
   getAllUsers,
   createNewUser,

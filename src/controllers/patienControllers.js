@@ -18,16 +18,15 @@ let postBookAppointment = async (req, res) => {
 }
 let postVerifyBookAppointment = async (req, res) => {
     try {
-        let infor = await patientService.postVerifyBookAppointment(req.body)
+        let infor = await patientService.postVerifyBookAppointment(req.query)
         return res.status(200).json({
             infor
         })
         
     } catch (e) {
-        console.log(e)
-        return res.status(200).json({
+        return res.status(403).json({
             errCode: -1,
-            errMessage: 'Erorr from sever'
+            errMessage: e.errMessage
         })
         
     }

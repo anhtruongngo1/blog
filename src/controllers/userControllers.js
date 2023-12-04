@@ -112,6 +112,24 @@ let getAllCode = async (req, res) => {
         });
     }
 };
+let handleConfirmPassword = async (req, res) => {
+    try {
+        const { email, password } = req.body
+        
+        if (!email || !password) {
+            return res.status(403).json({
+                  message : "Missing parameter"
+              });
+        }
+        let data = await userSevices.confirmPassword(password , email );
+        return res.status(200).json(data);
+    } catch (e) {
+        return res.status(401).json({
+            errCode: -1,
+            errMessage: "error from sever",
+        });
+    }
+};
 module.exports = {
     handleLogin,
     handleGetUserDetails,
@@ -120,4 +138,5 @@ module.exports = {
     handleEditUser,
     handleDeleteUser,
     getAllCode,
+    handleConfirmPassword,
 };

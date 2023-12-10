@@ -4,31 +4,39 @@ import { Op } from "sequelize";
 let postInfoBlog = (data , image) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!data.title || !data.content || !image || !data.userId || !data.topic) {
-        resolve({
-          errCode: 1,
-          errMessage: "missing data",
-        });
-      }
-      else {
-        let blog = await db.Blog.create({
-          userId: data.userId,
-          title: data.title,
-          content: data.content,
-          thumb: image.path,
-          topic : data.topic
-        });
-        resolve({
-          errCode: 0,
-          errMessage: "Create a blog success",
-        });
+      if (
+          !data.title ||
+          !data.descriptionHTML ||
+          !data.descriptionMarkdown ||
+          !image ||
+          !data.userId ||
+          !data.topic
+      ) {
+          resolve({
+              errCode: 1,
+              errMessage: "missing data",
+          });
+      } else {
+          let blog = await db.Blog.create({
+              userId: data.userId,
+              title: data.title,
+              descriptionHTML: data.descriptionHTML,
+              descriptionMarkdown: data.descriptionMarkdown,
+              thumb: image.path,
+              topic: data.topic,
+              accept: 0,
+          });
+          resolve({
+              errCode: 0,
+              errMessage: "Create a blog success",
+          });
       }
     } catch (e) {
       reject(e);
     }
   });
 };
-let getListBlog = (page, size, q , userId) => {
+let getListBlog = (page, size , userId) => {
   return new Promise(async (resolve, reject) => {
     try {
       const pageAsNumber = Number.parseInt(page);
@@ -47,99 +55,27 @@ let getListBlog = (page, size, q , userId) => {
         size = sizeAsNumber;
       }
 
-      if (userId) {
-        if (q) {
-          const blog = await db.Blog.findAndCountAll({
-            where: {
-              userId : userId ,
-              [Op.or]: [{ title: { [Op.like]: "%" + q + "%" } }],
-            },
-            include: [
+      const blog = await db.Blog.findAndCountAll({
+          where: {
+              userId: userId,
+          },
+          include: [
               {
-                model: db.User,
-                attributes: ["image", "firstName", "lastName" ],
+                  model: db.User,
+                  attributes: ["image", "firstName", "lastName"],
               },
-            ],
-            raw: true,
-            nest: true,
-  
-            limit: size,
-            offset: page * size,
-            order: [["createdAt", "DESC"]],
-          });
-          resolve({
-            data: blog.rows,
-            totalPages: Math.ceil(blog.count / size),
-          });
-        } else {
-          const blog = await db.Blog.findAndCountAll({
-            where: {
-             userId : userId  
-            },
-            attributes: ["createdAt", "title", "content", "thumb" , "id"],
-            include: [
-              {
-                model: db.User,
-                attributes: ["image", "firstName", "lastName"],
-              },
-            ],
-            raw: true,
-            nest: true,
-  
-            limit: size,
-            offset: page * size,
-            order: [["createdAt", "DESC"]],
-          });
-          resolve({
-            data: blog.rows,
-            totalPages: Math.ceil(blog.count / size),
-          });
-        }     
-      } else {
-        if (q) {
-          const blog = await db.Blog.findAndCountAll({
-            where: {
-              [Op.or]: [{ title: { [Op.like]: "%" + q + "%" } }],
-            },
-            include: [
-              {
-                model: db.User,
-                attributes: ["image", "firstName", "lastName" ],
-              },
-            ],
-            raw: true,
-            nest: true,
-  
-            limit: size,
-            offset: page * size,
-            order: [["createdAt", "DESC"]],
-          });
-          resolve({
-            data: blog.rows,
-            totalPages: Math.ceil(blog.count / size),
-          });
-        } else {
-          const blog = await db.Blog.findAndCountAll({
-            attributes: ["createdAt", "title", "content", "thumb" , "id"],
-            include: [
-              {
-                model: db.User,
-                attributes: ["image", "firstName", "lastName"],
-              },
-            ],
-            raw: true,
-            nest: true,
-  
-            limit: size,
-            offset: page * size,
-            order: [["createdAt", "DESC"]],
-          });
-          resolve({
-            data: blog.rows,
-            totalPages: Math.ceil(blog.count / size),
-          });
-        } 
-      }
+          ],
+          raw: true,
+          nest: true,
+
+          limit: size,
+          offset: page * size,
+          order: [["createdAt", "DESC"]],
+      });
+      resolve({
+          data: blog.rows,
+          totalPages: Math.ceil(blog.count / size),
+      });
     } catch (error) {
       reject(error);
     }
@@ -148,7 +84,16 @@ let getListBlog = (page, size, q , userId) => {
 let getAllBlogs = () => {
     return new Promise(async (resolve, reject) => {
         try {
-            let Blogs = await db.Blog.findAll();
+          let Blogs = await db.Blog.findAll({
+              include: [
+                  {
+                      model: db.User,
+                      attributes: ["image", "firstName", "lastName"],
+                  },
+              ],
+              raw: true,
+              nest: true,
+          });
             resolve({
                 errCode: 0,
                 data: Blogs,
@@ -197,18 +142,33 @@ let handleBlogDetails = (blogId) => {
         raw: true,
         nest: true,
       });
-      // if (blogs && blogs.length > 0) {
-      //   blogs.map(item => {
-      //       item.image = Buffer.from(item.image , 'base64').toString('binary');
-      //       return item
-      //   })
-
-      //}
       resolve(blog);
     } catch (error) {
       reject(error);
     }
   });
+};
+let handleConfirmBlog = (blogId , value) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const blog = await db.Blog.findOne({
+                where: { id: blogId },
+                raw: false,
+            });
+          if (blog) {
+            blog.accept = value;
+
+           await blog.save();
+            
+           resolve({
+               errCode: 0,
+               errMessage: "Confirm is success",
+           });
+          }
+        } catch (error) {
+            reject(error);
+        }
+    });
 };
 let handleEditBlog = (data) => {
   return new Promise(async (resolve, reject) => {
@@ -252,4 +212,5 @@ module.exports = {
     handleBlogDetails,
     handleEditBlog,
     getAllBlogs,
+    handleConfirmBlog,
 };

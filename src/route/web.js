@@ -157,6 +157,7 @@ const initWebRoutes = (app) => {
 
     router.delete("/api/delete-blog", blogControllers.handleDeleteBlog);
     router.get("/api/get-blog-detail", blogControllers.handleBlogDetails);
+    router.get("/api/get-confirm-blog", blogControllers.handleConfirmBlog);
     router.put("/api/edit-blog", blogControllers.handleEditBlog);
 
     // get all list patient  for doctor

@@ -15,15 +15,20 @@ module.exports = (sequelize, DataTypes) => {
 
     }
   }
-  Blog.init({
-    userId : DataTypes.INTEGER ,
-    title: DataTypes.STRING,
-    content: DataTypes.TEXT,
-    thumb: DataTypes.STRING,
-    topic : DataTypes.STRING
-  }, {
-    sequelize,
-    modelName: 'Blog',
-  });
+  Blog.init(
+      {
+          userId: DataTypes.INTEGER,
+          title: DataTypes.STRING,
+          descriptionHTML: DataTypes.TEXT,
+          descriptionMarkdown: DataTypes.TEXT,
+          thumb: DataTypes.STRING,
+          topic: DataTypes.STRING,
+          accept: DataTypes.BOOLEAN,
+      },
+      {
+          sequelize,
+          modelName: "Blog",
+      }
+  );
   return Blog;
 };

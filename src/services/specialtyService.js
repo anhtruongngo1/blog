@@ -162,7 +162,7 @@ let getDetailSpecialtyById = (inputId) => {
                     where: {
                         id: inputId,
                     },
-                    attributes: ["descriptionHTML", "descriptionMarkdown"],
+                    attributes: ["descriptionHTML", "descriptionMarkdown" , "name"],
                     //   include: [
                     //         {
                     //             model: db.DoctorInfor , as : 'specialtyData' ,
